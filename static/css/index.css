@@ -1,0 +1,18 @@
+body {
+    background-color: #f0f8ff;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    color: rgb(13, 86, 245);
+}
+
+h2 {
+    color: green;
+}
+
+p {
+    color: rgb(255, 117, 117);
+    font-size: 20px;
+}
