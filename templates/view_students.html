@@ -40,6 +40,7 @@
                  <th>Roll No</th>
                  <th>Class</th>
                  <th>Section</th>
+                 <th>Father's Name</th>
                  <th>Mobile</th>
                  <th>Action</th>
               </tr>
@@ -53,13 +54,21 @@
                <td>{{ student[2] }}</td>
                <td>{{ student[3] }}</td>
                <td>{{ student[4] }}</td>
+               <td>{{ student[5] }}</td>
                <td>{{ student[6] }}</td>
                <td>
-                 <a href="/delete_student/{{ student[0] }}"
+
+                 <a href="/edit_student/{{ student[0] }}" class="edit-btn">
+                   Edit
+                </a>
+
+                <a href="/delete_student/{{ student[0] }}"
+                   class="delete-btn"
                    onclick="return confirm('Are you sure you want to delete this student?')">
-                    Delete
-                  </a>
-                </td>
+                   Delete
+                </a>
+
+               </td>
               </tr>
 
                {% endfor %}

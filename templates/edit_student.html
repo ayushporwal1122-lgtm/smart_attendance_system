@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Student</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/add_student.css') }}">
+</head>
+
+<body>
+
+<header>
+    <h1>Smart Attendance System</h1>
+</header>
+
+<div class="container">
+
+    <aside>
+        <h2>Admin Panel</h2>
+
+        <ul>
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/add_student">Add Student</a></li>
+            <li><a href="/view_students">View Students</a></li>
+            <li><a href="/attendance">Attendance</a></li>
+            <li><a href="/reports">Reports</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+
+    </aside>
+
+    <main>
+
+        <h2>Edit Student</h2>
+
+        <form method="POST" enctype="multipart/form-data">
+
+            <div class="row">
+
+                 <div class="input-box">
+                  <label>Student Name</label>
+                  <input type="text" name="student_name" value="{{ student[1] }}" placeholder="Enter Student Name"required>
+                </div>
+
+                <div class="input-box">
+                  <label>Roll Number</label>
+                  <input type="text" name="roll_number" value="{{ student[2] }}" placeholder="Enter Roll Number"required>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+             <div class="input-box">
+               <label>Class</label>
+               <input type="text" name="class_name" value="{{ student[3] }}" placeholder="Enter Class"required>
+            </div>
+
+            <div class="input-box">
+              <label>Section</label>
+              <input type="text" name="section" value="{{ student[4] }}" placeholder="Enter Section"required>
+            </div>
+
+            </div>
+
+            <div class="row">
+
+            <div class="input-box">
+              <label>Father's Name</label>
+              <input type="text" name="father_name" value="{{ student[5] }}" placeholder="Enter Father's Name"required>
+            </div>
+
+            <div class="input-box">
+              <label>Mobile Number</label>
+              <input type="tel" name="mobile" value="{{ student[6] }}" placeholder="Enter Mobile Number"required>
+            </div>
+
+             </div>
+
+            <div class="row">
+
+            <div class="input-box">
+              <label>Email</label>
+              <input type="email" name="email" value="{{ student[7] }}" placeholder="Enter Email" required>
+            </div>
+
+            <div class="input-box">
+              <label>Upload Photo</label>
+              <input type="file" name="photo">
+            </div>
+
+            </div>
+
+            <div class="input-box">
+
+              <label>Address</label>
+
+              <textarea name="address" placeholder="Enter Address">{{ student[8] }}</textarea>
+
+            </div>
+
+              <button type="submit">Update Student</button>
+
+        </form>
+
+    </main>
+
+</div>
+
+</body>
+</html>

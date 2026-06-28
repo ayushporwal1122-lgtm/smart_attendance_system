@@ -62,6 +62,55 @@ def view_students():
 
     return render_template("view_students.html", students=students)
 
+@app.route("/edit_student/<int:id>", methods=["GET", "POST"])
+def edit_student(id):
+
+    if request.method == "POST":
+
+        student_name = request.form["student_name"]
+        roll_number = request.form["roll_number"]
+        class_name = request.form["class_name"]
+        section = request.form["section"]
+        father_name = request.form["father_name"]
+        mobile = request.form["mobile"]
+        email = request.form["email"]
+        address = request.form["address"]
+
+        sql = """
+        UPDATE students
+        SET
+            student_name=%s,
+            roll_number=%s,
+            class_name=%s,
+            section=%s,
+            father_name=%s,
+            mobile=%s,
+            email=%s,
+            address=%s
+        WHERE id=%s
+        """
+
+        values = (
+            student_name,
+            roll_number,
+            class_name,
+            section,
+            father_name,
+            mobile,
+            email,
+            address,
+            id
+        )
+
+        cursor.execute(sql, values)
+        db.commit()
+
+        return redirect("/view_students")
+
+    cursor.execute("SELECT * FROM students WHERE id=%s", (id,))
+    student = cursor.fetchone()
+
+    return render_template("edit_student.html", student=student)
 @app.route("/delete_student/<int:id>")
 def delete_student(id):
 

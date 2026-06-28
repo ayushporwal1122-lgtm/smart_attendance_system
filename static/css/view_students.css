@@ -91,3 +91,30 @@ tr:hover{
     background:#bad8f7;
     transition:0.3s;
 }
+
+.edit-btn{
+    background:#28a745;
+    color:white;
+    padding:8px 14px;
+    text-decoration:none;
+    border-radius:6px;
+    margin-right:8px;
+    font-weight:bold;
+}
+
+.edit-btn:hover{
+    background:#218838;
+}
+
+.delete-btn{
+    background:#dc3545;
+    color:white;
+    padding:8px 14px;
+    text-decoration:none;
+    border-radius:6px;
+    font-weight:bold;
+}
+
+.delete-btn:hover{
+    background:#c82333;
+}
