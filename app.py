@@ -4,12 +4,12 @@ import pandas as pd
 from flask import send_file
 import os
 from werkzeug.utils import secure_filename
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session
 from datetime import date
 import mysql.connector
 
 app = Flask(__name__)
-
+app.secret_key = "smart_attendance_secret_key"
 db = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -23,13 +23,28 @@ cursor = db.cursor()
 def home():
     return render_template("index.html")
 
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
+
+    if request.method == "POST":
+
+        username = request.form["username"]
+        password = request.form["password"]
+
+        if username == "admin" and password == "admin123":
+
+            session["admin"] = username
+            return redirect("/dashboard")
+
+        else:
+            return "Invalid Username or Password"
+
     return render_template("login.html")
 
 @app.route("/dashboard")
 def dashboard():
-
+    if "admin" not in session:
+     return redirect("/login")
     # Total Students
     cursor.execute("SELECT COUNT(*) FROM students")
     total_students = cursor.fetchone()[0]
@@ -64,7 +79,8 @@ def dashboard():
     )
 @app.route("/add_student", methods=["GET", "POST"])
 def add_student():
-
+    if "admin" not in session:
+      return redirect("/login")
     if request.method == "POST":
         photo = request.files["photo"]
 
@@ -102,7 +118,8 @@ def add_student():
 
 @app.route("/view_students")
 def view_students():
-
+    if "admin" not in session:
+      return redirect("/login")
     search = request.args.get("search")
 
     if search:
@@ -127,7 +144,8 @@ def view_students():
 
 @app.route("/attendance")
 def attendance():
-
+    if "admin" not in session:
+      return redirect("/login")
     cursor.execute("SELECT * FROM students")
 
     students = cursor.fetchall()
@@ -136,7 +154,8 @@ def attendance():
 
 @app.route("/edit_student/<int:id>", methods=["GET", "POST"])
 def edit_student(id):
-
+    if "admin" not in session:
+       return redirect("/login")
     if request.method == "POST":
 
         student_name = request.form["student_name"]
@@ -187,7 +206,8 @@ def edit_student(id):
 
 @app.route("/save_attendance", methods=["POST"])
 def save_attendance():
-
+    if "admin" not in session:
+      return redirect("/login")
     student_ids = request.form.getlist("student_id")
 
     for student_id in student_ids:
@@ -208,6 +228,9 @@ def save_attendance():
 @app.route("/reports", methods=["GET", "POST"])
 def reports():
 
+    if "admin" not in session:
+        return redirect("/login") 
+    
     if request.method == "POST":
 
         attendance_date = request.form["attendance_date"]
@@ -249,7 +272,8 @@ def reports():
 
 @app.route("/export_excel")
 def export_excel():
-
+    if "admin" not in session:
+       return redirect("/login")
     sql = """
     SELECT
         students.student_name,
@@ -286,6 +310,9 @@ def export_excel():
 
 @app.route("/export_pdf")
 def export_pdf():
+
+    if "admin" not in session:
+        return redirect("/login")
 
     sql = """
     SELECT
@@ -328,13 +355,21 @@ def export_pdf():
 
 @app.route("/delete_student/<int:id>")
 def delete_student(id):
-
+    if "admin" not in session:
+        return redirect("/login")
     sql = "DELETE FROM students WHERE id = %s"
 
     cursor.execute(sql, (id,))
     db.commit()
 
     return redirect("/view_students")
+
+@app.route("/logout")
+def logout():
+
+    session.pop("admin", None)
+
+    return redirect("/login")
 
 if __name__ == "__main__":
     app.run(debug=True)
