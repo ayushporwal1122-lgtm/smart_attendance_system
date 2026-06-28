@@ -113,7 +113,7 @@ main{
 
 main h2{
 
-    color:#0d6efd;
+    color:#0a0a0b;
 
     font-size:30px;
 
@@ -144,5 +144,66 @@ main p{
     box-shadow:0 0 10px rgba(0,0,0,0.15);
 
     margin-top:20px;
+
+}
+/* ===========================
+   Dashboard Cards
+=========================== */
+
+.dashboard-cards{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+
+    gap:25px;
+
+    margin-top:30px;
+
+}
+
+.card{
+
+    background:#ffffff;
+
+    padding:25px;
+
+    border-radius:12px;
+
+    text-align:center;
+
+    box-shadow:0 5px 15px rgba(0,0,0,0.15);
+
+    transition:0.3s;
+
+    cursor:pointer;
+
+}
+
+.card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 10px 20px rgba(0,0,0,0.25);
+
+}
+
+.card h3{
+
+    color:#0d6efd;
+
+    font-size:22px;
+
+    margin-bottom:15px;
+
+}
+
+.card p{
+
+    font-size:34px;
+
+    font-weight:bold;
+
+    color:#1e293b;
 
 }

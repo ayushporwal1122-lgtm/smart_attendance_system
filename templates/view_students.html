@@ -32,48 +32,75 @@
 
         <h2>View Students</h2>
 
-          <table>
+        <form method="GET" action="/view_students" class="search-form">
 
-              <tr>
-                 <th>ID</th>
-                 <th>Name</th>
-                 <th>Roll No</th>
-                 <th>Class</th>
-                 <th>Section</th>
-                 <th>Father's Name</th>
-                 <th>Mobile</th>
-                 <th>Action</th>
-              </tr>
+            <input
+                type="text"
+                name="search"
+                placeholder="Search by Name or Roll Number">
 
-                {% for student in students %}
+            <button type="submit">Search</button>
 
-              <tr>
+        </form>
 
-               <td>{{ student[0] }}</td>
-               <td>{{ student[1] }}</td>
-               <td>{{ student[2] }}</td>
-               <td>{{ student[3] }}</td>
-               <td>{{ student[4] }}</td>
-               <td>{{ student[5] }}</td>
-               <td>{{ student[6] }}</td>
-               <td>
+        <br>
 
-                 <a href="/edit_student/{{ student[0] }}" class="edit-btn">
-                   Edit
-                </a>
+        <table>
 
-                <a href="/delete_student/{{ student[0] }}"
-                   class="delete-btn"
-                   onclick="return confirm('Are you sure you want to delete this student?')">
-                   Delete
-                </a>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Roll No</th>
+                <th>Class</th>
+                <th>Section</th>
+                <th>Father's Name</th>
+                <th>Mobile</th>
+                <th>Photo</th>
+                <th>Action</th>
+            </tr>
 
-               </td>
-              </tr>
+            {% for student in students %}
 
-               {% endfor %}
+            <tr>
 
-           </table>
+                <td>{{ student[0] }}</td>
+                <td>{{ student[1] }}</td>
+                <td>{{ student[2] }}</td>
+                <td>{{ student[3] }}</td>
+                <td>{{ student[4] }}</td>
+                <td>{{ student[5] }}</td>
+                <td>{{ student[6] }}</td>
+
+                <td>
+                    {% if student[9] %}
+                        <img src="{{ url_for('static', filename='uploads/' + student[9]) }}"
+                             width="70"
+                             height="70"
+                             style="border-radius:8px; object-fit:cover;">
+                    {% else %}
+                        No Photo
+                    {% endif %}
+                </td>
+
+                <td>
+
+                    <a href="/edit_student/{{ student[0] }}" class="edit-btn">
+                        Edit
+                    </a>
+
+                    <a href="/delete_student/{{ student[0] }}"
+                       class="delete-btn"
+                       onclick="return confirm('Are you sure you want to delete this student?')">
+                        Delete
+                    </a>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </table>
 
     </main>
 
