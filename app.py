@@ -434,9 +434,13 @@ def export_pdf():
 def delete_student(id):
     if "admin" not in session:
         return redirect("/login")
-    sql = "DELETE FROM students WHERE id = %s"
 
-    cursor.execute(sql, (id,))
+    # Pehle attendance delete karo
+    cursor.execute("DELETE FROM attendance WHERE student_id = %s", (id,))
+
+    # Phir student delete karo
+    cursor.execute("DELETE FROM students WHERE id = %s", (id,))
+
     db.commit()
 
     return redirect("/view_students")
@@ -472,15 +476,25 @@ def start_attendance():
         for face_encoding, face_location in zip(face_encodings, face_locations):
 
             matches = face_recognition.compare_faces(
-                known_encodings,
-                face_encoding
+              known_encodings,
+              face_encoding,
+              tolerance=0.5
+            )       
+
+            face_distances = face_recognition.face_distance(
+              known_encodings,
+              face_encoding
             )
 
-            if True in matches:
+            best_match_index = np.argmin(face_distances)
 
-                index = matches.index(True)
-                name = known_names[index]
+            print("Distances:", face_distances)
+            print("Best Match:", known_names[best_match_index])
+            print("Matches:", matches)  
 
+            if matches[best_match_index]:
+                print("Inside IF Block") 
+                name = known_names[best_match_index]
                 cursor.execute(
                     "SELECT id FROM students WHERE student_name=%s",
                     (name,)
@@ -491,7 +505,7 @@ def start_attendance():
                 if student:
 
                     student_id = student[0]
-
+                    print("Student ID:", student_id)
                     cursor.execute("""
                         SELECT *
                         FROM attendance
@@ -510,7 +524,7 @@ def start_attendance():
                         """, (student_id,))
 
                         db.commit()
-
+                        print("Attendance Saved") 
                         attendance_saved = True
 
                         winsound.Beep(1000, 500)
