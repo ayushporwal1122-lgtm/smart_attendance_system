@@ -31,6 +31,21 @@
     <main>
 
         <h2>Mark Attendance</h2>
+        
+          <br>
+
+           <a href="/start_attendance"
+           style="background:#28a745;color:white;padding:10px 20px;
+           text-decoration:none;border-radius:5px;font-weight:bold;">
+           🎥 Start Face Attendance
+           </a>
+           <br><br>
+           <p style="color:red;">
+             ⚠ If face is not detected or student photo is unavailable,
+             use Manual Attendance below.
+           </p>
+
+          <br><br>
 
         <form action="/save_attendance" method="POST">
 
@@ -53,10 +68,10 @@
                      {{ student[0] }}
                        <input type="hidden" name="student_id" value="{{ student[0] }}">
                     </td>
-                    <td>{{ student[1] }}<input type="hidden" name="student_id" value="{{ student[0] }}"></td>
-                    <td>{{ student[2] }}<input type="hidden" name="student_id" value="{{ student[0] }}"></td>
-                    <td>{{ student[3] }}<input type="hidden" name="student_id" value="{{ student[0] }}"></td>
-                    <td>{{ student[4] }}<input type="hidden" name="student_id" value="{{ student[0] }}"></td>
+                    <td>{{ student[1] }}</td>
+                    <td>{{ student[2] }}</td>
+                    <td>{{ student[3] }}</td>
+                    <td>{{ student[4] }}</td>
 
                     <td>
                         <input type="radio"

@@ -1,3 +1,9 @@
+import time
+import winsound
+import face_recognition
+import pickle
+import cv2
+import numpy as np
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.lib import colors
 import pandas as pd
@@ -18,6 +24,55 @@ db = mysql.connector.connect(
 )
 
 cursor = db.cursor()
+
+@app.route("/generate_encodings")
+def generate_encodings():
+
+    if "admin" not in session:
+        return redirect("/login")
+
+    cursor.execute("SELECT student_name, photo FROM students")
+    students = cursor.fetchall()
+
+    known_encodings = []
+    known_names = []
+
+    for student in students:
+
+        name = student[0]
+        photo = student[1]
+        if not photo:
+          print(name, "Photo not found in database")
+          continue
+        image_path = os.path.join("static", "uploads", photo)
+
+        if not os.path.exists(image_path):
+            print(photo, "Not Found")
+            continue
+
+        image = face_recognition.load_image_file(image_path)
+        print("Loading:", image_path)
+        encodings = face_recognition.face_encodings(image)
+        print("Faces Found:", len(encodings))
+
+        if len(encodings) > 0:
+            known_encodings.append(encodings[0])
+            known_names.append(name)
+            print(name, "Encoding Generated")
+        else:
+            print("Face not found in", photo)
+
+    data = {
+        "encodings": known_encodings,
+        "names": known_names
+    }
+
+    os.makedirs("encodings", exist_ok=True)
+
+    with open("encodings/encodings.pkl", "wb") as f:
+        pickle.dump(data, f)
+
+    return "Encodings Generated Successfully!"
 
 @app.route("/")
 def home():
@@ -206,20 +261,42 @@ def edit_student(id):
 
 @app.route("/save_attendance", methods=["POST"])
 def save_attendance():
+
     if "admin" not in session:
-      return redirect("/login")
+        return redirect("/login")
+
     student_ids = request.form.getlist("student_id")
 
     for student_id in student_ids:
 
         status = request.form.get(f"attendance_{student_id}")
 
-        sql = """
-        INSERT INTO attendance (student_id, attendance_date, status)
-        VALUES (%s, CURDATE(), %s)
-        """
+        # Check if attendance already exists today
+        cursor.execute("""
+            SELECT id
+            FROM attendance
+            WHERE student_id=%s
+            AND attendance_date=CURDATE()
+        """, (student_id,))
 
-        cursor.execute(sql, (student_id, status))
+        already = cursor.fetchone()
+
+        if not already:
+
+            cursor.execute("""
+                INSERT INTO attendance
+                (student_id, attendance_date, status)
+                VALUES (%s, CURDATE(), %s)
+            """, (student_id, status))
+
+        else:
+
+            cursor.execute("""
+                UPDATE attendance
+                SET status=%s
+                WHERE student_id=%s
+                AND attendance_date=CURDATE()
+            """, (status, student_id))
 
     db.commit()
 
@@ -364,6 +441,154 @@ def delete_student(id):
 
     return redirect("/view_students")
 
+@app.route("/start_attendance")
+def start_attendance():
+
+    if "admin" not in session:
+        return redirect("/login")
+
+    with open("encodings/encodings.pkl", "rb") as f:
+        data = pickle.load(f)
+
+    known_encodings = data["encodings"]
+    known_names = data["names"]
+
+    cap = cv2.VideoCapture(0)
+
+    while True:
+
+        ret, frame = cap.read()
+
+        if not ret:
+            break
+
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        face_locations = face_recognition.face_locations(rgb)
+        face_encodings = face_recognition.face_encodings(rgb, face_locations)
+
+        attendance_saved = False
+
+        for face_encoding, face_location in zip(face_encodings, face_locations):
+
+            matches = face_recognition.compare_faces(
+                known_encodings,
+                face_encoding
+            )
+
+            if True in matches:
+
+                index = matches.index(True)
+                name = known_names[index]
+
+                cursor.execute(
+                    "SELECT id FROM students WHERE student_name=%s",
+                    (name,)
+                )
+
+                student = cursor.fetchone()
+
+                if student:
+
+                    student_id = student[0]
+
+                    cursor.execute("""
+                        SELECT *
+                        FROM attendance
+                        WHERE student_id=%s
+                        AND attendance_date=CURDATE()
+                    """, (student_id,))
+
+                    already = cursor.fetchone()
+
+                    if not already:
+
+                        cursor.execute("""
+                            INSERT INTO attendance
+                            (student_id, attendance_date, status)
+                            VALUES (%s, CURDATE(), 'Present')
+                        """, (student_id,))
+
+                        db.commit()
+
+                        attendance_saved = True
+
+                        winsound.Beep(1000, 500)
+
+                top, right, bottom, left = face_location
+
+                cv2.rectangle(
+                    frame,
+                    (left, top),
+                    (right, bottom),
+                    (0,255,0),
+                    2
+                )
+
+                cv2.putText(
+                    frame,
+                    name,
+                    (left, top-10),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.8,
+                    (0,255,0),
+                    2
+                )
+
+                if attendance_saved:
+
+                    cv2.circle(
+                        frame,
+                        (right+20, top+20),
+                        18,
+                        (0,255,0),
+                        -1
+                    )
+
+                    cv2.line(
+                        frame,
+                        (right+15, top+20),
+                        (right+20, top+25),
+                        (255,255,255),
+                        2
+                    )
+
+                    cv2.line(
+                        frame,
+                        (right+20, top+25),
+                        (right+30, top+12),
+                        (255,255,255),
+                        2
+                    )
+
+                    cv2.putText(
+                        frame,
+                        "Attendance Marked Successfully",
+                        (40,40),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.8,
+                        (0,255,0),
+                        2
+                    )
+
+                    cv2.imshow("Smart Attendance", frame)
+
+                    cv2.waitKey(2000)
+
+                    cap.release()
+                    cv2.destroyAllWindows()
+
+                    return redirect("/attendance_success")
+
+        cv2.imshow("Smart Attendance", frame)
+
+        if cv2.waitKey(1) & 0xFF == 27:
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+    return redirect("/attendance")    
 @app.route("/logout")
 def logout():
 
@@ -371,5 +596,8 @@ def logout():
 
     return redirect("/login")
 
+@app.route("/attendance_success")
+def attendance_success():
+    return render_template("attendance_success.html")
 if __name__ == "__main__":
     app.run(debug=True)
