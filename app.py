@@ -1,3 +1,4 @@
+from datetime import datetime
 import time
 import winsound
 import face_recognition
@@ -13,9 +14,68 @@ from werkzeug.utils import secure_filename
 from flask import Flask, render_template, request, redirect, session
 from datetime import date
 import mysql.connector
+import requests
 
 app = Flask(__name__)
 app.secret_key = "smart_attendance_secret_key"
+# WhatsApp API Configuration
+ACCESS_TOKEN = "EAAYVdHhdZBKIBSHWZASZAVBaz0sJPJWAErbf8En9OXyZCGjSaWDoMqfNl0v57vmAKHNyt6ZCkkeW6GHbu7I7VyPFhTPgzKXqozDJBXR6U2CcZBUwipRZAZAkZCzGT8CcP0MAJ2yxqwDDXZAk5O9a26XFqsLqa6j5b7LaS2XRJaZCsAc7Sjyv6PXz7Kvy6bm8NZBfNPR3iwtZCR6E1Gj9sgACbNZBQIJEnMZCFnZCworb0l0uYYCE0n0Nh08UFJrFZADcBqE01VstKGSHKllVzCjpgoxl8wokTf2HZA"
+
+PHONE_NUMBER_ID = "1328142043705318"
+
+WHATSAPP_URL = f"https://graph.facebook.com/v23.0/{PHONE_NUMBER_ID}/messages"
+def send_whatsapp_message(phone, student_name, attendance_date, attendance_time, template_name):
+
+    headers = {
+        "Authorization": f"Bearer {ACCESS_TOKEN}",
+        "Content-Type": "application/json"
+    }
+
+    data = {
+        "messaging_product": "whatsapp",
+        "to": phone,
+        "type": "template",
+        "template": {
+            "name": template_name,
+            "language": {
+                "code": "en"
+            },
+            "components": [
+                {
+                    "type": "body",
+                    "parameters": [
+                        {
+                            "type": "text",
+                            "text": student_name
+                        },
+                        {
+                            "type": "text",
+                            "text": attendance_date
+                        },
+                        {
+                            "type": "text",
+                            "text": attendance_time
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+
+    response = requests.post(
+        WHATSAPP_URL,
+        headers=headers,
+        json=data
+    )
+
+    print("Status:", response.status_code)
+    print("Response:", response.text)
+    
+    if response.status_code == 200:
+        print("✅ WhatsApp Message Sent Successfully")
+    else:
+        print("❌ WhatsApp Message Failed")
+    
 db = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -36,7 +96,6 @@ def generate_encodings():
 
     known_encodings = []
     known_names = []
-
     for student in students:
 
         name = student[0]
@@ -98,8 +157,10 @@ def login():
 
 @app.route("/dashboard")
 def dashboard():
+
     if "admin" not in session:
-     return redirect("/login")
+        return redirect("/login")
+
     # Total Students
     cursor.execute("SELECT COUNT(*) FROM students")
     total_students = cursor.fetchone()[0]
@@ -152,17 +213,18 @@ def add_student():
         class_name = request.form["class_name"]
         section = request.form["section"]
         father_name = request.form["father_name"]
+        parent_mobile = request.form["parent_mobile"]
         mobile = request.form["mobile"]
         email = request.form["email"]
         address = request.form["address"]
 
         sql = """
         INSERT INTO students
-        (student_name, roll_number, class_name, section, father_name, mobile, email, address, photo)
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        (student_name, roll_number, class_name, section, father_name, parent_mobile, mobile, email, address, photo)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
         """
 
-        values = (student_name, roll_number, class_name, section, father_name, mobile, email, address, filename)
+        values = (student_name, roll_number, class_name, section, father_name, parent_mobile, mobile, email, address, filename)
 
         cursor.execute(sql, values)
         db.commit()
@@ -173,30 +235,56 @@ def add_student():
 
 @app.route("/view_students")
 def view_students():
+
     if "admin" not in session:
-      return redirect("/login")
+        return redirect("/login")
+
     search = request.args.get("search")
 
     if search:
 
         sql = """
-        SELECT * FROM students
+        SELECT
+            id,
+            student_name,
+            roll_number,
+            class_name,
+            section,
+            father_name,
+            parent_mobile,
+            mobile,
+            email,
+            address,
+            photo
+        FROM students
         WHERE student_name LIKE %s
         OR roll_number LIKE %s
         """
 
         value = ("%" + search + "%", "%" + search + "%")
-
         cursor.execute(sql, value)
 
     else:
 
-        cursor.execute("SELECT * FROM students")
+        cursor.execute("""
+            SELECT
+                id,
+                student_name,
+                roll_number,
+                class_name,
+                section,
+                father_name,
+                parent_mobile,
+                mobile,
+                email,
+                address,
+                photo
+            FROM students
+        """)
 
     students = cursor.fetchall()
 
     return render_template("view_students.html", students=students)
-
 @app.route("/attendance")
 def attendance():
     if "admin" not in session:
@@ -209,8 +297,10 @@ def attendance():
 
 @app.route("/edit_student/<int:id>", methods=["GET", "POST"])
 def edit_student(id):
+
     if "admin" not in session:
-       return redirect("/login")
+        return redirect("/login")
+
     if request.method == "POST":
 
         student_name = request.form["student_name"]
@@ -218,47 +308,124 @@ def edit_student(id):
         class_name = request.form["class_name"]
         section = request.form["section"]
         father_name = request.form["father_name"]
+        parent_mobile = request.form["parent_mobile"]
         mobile = request.form["mobile"]
         email = request.form["email"]
         address = request.form["address"]
 
-        sql = """
-        UPDATE students
-        SET
-            student_name=%s,
-            roll_number=%s,
-            class_name=%s,
-            section=%s,
-            father_name=%s,
-            mobile=%s,
-            email=%s,
-            address=%s
-        WHERE id=%s
-        """
+        photo = request.files["photo"]
 
-        values = (
-            student_name,
-            roll_number,
-            class_name,
-            section,
-            father_name,
-            mobile,
-            email,
-            address,
-            id
-        )
+        filename = None
+
+        # New Photo Upload
+        if photo.filename != "":
+
+            filename = secure_filename(photo.filename)
+
+            upload_folder = os.path.join(
+                app.root_path,
+                "static",
+                "uploads"
+            )
+
+            os.makedirs(upload_folder, exist_ok=True)
+
+            photo.save(
+                os.path.join(upload_folder, filename)
+            )
+
+        # Photo bhi update karni hai
+        if filename:
+
+            sql = """
+            UPDATE students
+            SET
+                student_name=%s,
+                roll_number=%s,
+                class_name=%s,
+                section=%s,
+                father_name=%s,
+                parent_mobile=%s,
+                mobile=%s,
+                email=%s,
+                address=%s,
+                photo=%s
+            WHERE id=%s
+            """
+
+            values = (
+                student_name,
+                roll_number,
+                class_name,
+                section,
+                father_name,
+                parent_mobile,
+                mobile,
+                email,
+                address,
+                filename,
+                id
+            )
+
+        # Photo update nahi karni
+        else:
+
+            sql = """
+            UPDATE students
+            SET
+                student_name=%s,
+                roll_number=%s,
+                class_name=%s,
+                section=%s,
+                father_name=%s,
+                parent_mobile=%s,
+                mobile=%s,
+                email=%s,
+                address=%s
+            WHERE id=%s
+            """
+
+            values = (
+                student_name,
+                roll_number,
+                class_name,
+                section,
+                father_name,
+                parent_mobile,
+                mobile,
+                email,
+                address,
+                id
+            )
 
         cursor.execute(sql, values)
         db.commit()
 
         return redirect("/view_students")
 
-    cursor.execute("SELECT * FROM students WHERE id=%s", (id,))
+    cursor.execute("""
+        SELECT
+            id,
+            student_name,
+            roll_number,
+            class_name,
+            section,
+            father_name,
+            parent_mobile,
+            mobile,
+            email,
+            address,
+            photo
+        FROM students
+        WHERE id=%s
+    """, (id,))
+
     student = cursor.fetchone()
 
-    return render_template("edit_student.html", student=student)
-
-
+    return render_template(
+        "edit_student.html",
+        student=student
+    )
 @app.route("/save_attendance", methods=["POST"])
 def save_attendance():
 
@@ -306,26 +473,57 @@ def save_attendance():
 def reports():
 
     if "admin" not in session:
-        return redirect("/login") 
-    
+        return redirect("/login")
+
     if request.method == "POST":
 
-        attendance_date = request.form["attendance_date"]
+        student_name = request.form.get("student_name")
+        roll_number = request.form.get("roll_number")
+        from_date = request.form.get("from_date")
+        to_date = request.form.get("to_date")
 
         sql = """
         SELECT
-            students.student_name,
-            students.roll_number,
-            attendance.attendance_date,
-            attendance.status
+           students.student_name,
+           students.roll_number,
+           attendance.attendance_date,
+           attendance.status,
+           attendance.attendance_time
         FROM attendance
         INNER JOIN students
         ON attendance.student_id = students.id
-        WHERE attendance.attendance_date = %s
-        ORDER BY attendance.attendance_date DESC
+        WHERE 1=1
         """
 
-        cursor.execute(sql, (attendance_date,))
+        values = []
+
+        if student_name:
+           sql += " AND students.student_name LIKE %s"
+           values.append("%" + student_name + "%")
+        
+        if roll_number:
+          sql += " AND students.roll_number = %s"
+          values.append(roll_number)
+
+        if from_date and to_date:
+           sql += """
+              AND attendance.attendance_date
+              BETWEEN %s AND %s
+           """
+           values.append(from_date)
+           values.append(to_date)
+
+        elif from_date:
+           sql += " AND attendance.attendance_date >= %s"
+           values.append(from_date)
+
+        elif to_date:
+           sql += " AND attendance.attendance_date <= %s"
+           values.append(to_date)
+
+        sql += " ORDER BY attendance.attendance_date DESC"
+
+        cursor.execute(sql, tuple(values))
         records = cursor.fetchall()
 
     else:
@@ -335,7 +533,8 @@ def reports():
             students.student_name,
             students.roll_number,
             attendance.attendance_date,
-            attendance.status
+            attendance.status,
+            attendance.attendance_time
         FROM attendance
         INNER JOIN students
         ON attendance.student_id = students.id
@@ -345,7 +544,92 @@ def reports():
         cursor.execute(sql)
         records = cursor.fetchall()
 
-    return render_template("reports.html", records=records)
+    summary_sql = """
+    SELECT
+        students.student_name,
+
+        SUM(
+            CASE
+                WHEN attendance.status = 'Present' THEN 1
+                ELSE 0
+            END
+        ) AS present,
+
+        SUM(
+            CASE
+                WHEN attendance.status = 'Absent' THEN 1
+                ELSE 0
+            END
+        ) AS absent,
+
+        ROUND(
+            (
+                SUM(
+                    CASE
+                        WHEN attendance.status = 'Present' THEN 1
+                        ELSE 0
+                    END
+                ) * 100
+            ) /
+            NULLIF(
+                SUM(
+                    CASE
+                        WHEN attendance.status IN ('Present','Absent') THEN 1
+                        ELSE 0
+                    END
+                ),
+                0
+            ),
+            2
+        ) AS percentage
+
+    FROM students
+
+    LEFT JOIN attendance
+    ON students.id = attendance.student_id
+
+    GROUP BY students.id
+    """
+
+    cursor.execute(summary_sql)
+    rows = cursor.fetchall()
+
+    summary = []
+
+    for row in rows:
+
+        name = row[0]
+        present = row[1]
+        absent = row[2]
+        percentage = row[3]
+
+        if percentage is None:
+            percentage = 0
+
+        if percentage >= 90:
+            status = "🟢 Excellent"
+
+        elif percentage >= 75:
+            status = "🟡 Good"
+
+        else:
+            status = "🔴 Low"
+
+        summary.append(
+            (
+                name,
+                present,
+                absent,
+                percentage,
+                status
+            )
+        )
+
+    return render_template(
+        "reports.html",
+        records=records,
+        summary=summary
+    )
 
 @app.route("/export_excel")
 def export_excel():
@@ -450,7 +734,24 @@ def start_attendance():
 
     if "admin" not in session:
         return redirect("/login")
+    cursor.execute("""
+        SELECT is_closed
+        FROM attendance_status
+        WHERE attendance_date = CURDATE()
+    """)
 
+    status = cursor.fetchone()
+
+    if status and status[0] == "Yes":
+        return """
+        <h2 style='color:red;text-align:center;margin-top:50px;'>
+        Today's Attendance has already been Closed.
+        </h2>
+        <div style='text-align:center;'>
+            <a href='/attendance'>Go Back</a>
+        </div>
+        """
+   
     with open("encodings/encodings.pkl", "rb") as f:
         data = pickle.load(f)
 
@@ -507,39 +808,133 @@ def start_attendance():
                     student_id = student[0]
                     print("Student ID:", student_id)
                     cursor.execute("""
-                        SELECT *
-                        FROM attendance
-                        WHERE student_id=%s
-                        AND attendance_date=CURDATE()
+                       SELECT status
+                       FROM attendance
+                       WHERE student_id=%s
+                       AND attendance_date=CURDATE()
                     """, (student_id,))
 
                     already = cursor.fetchone()
 
+                    # Agar attendance record nahi hai
                     if not already:
 
                         cursor.execute("""
-                            INSERT INTO attendance
-                            (student_id, attendance_date, status)
-                            VALUES (%s, CURDATE(), 'Present')
+                          INSERT INTO attendance
+                          (student_id, attendance_date, attendance_time, status)
+                          VALUES (%s, CURDATE(), CURTIME(), 'Present')
                         """, (student_id,))
 
                         db.commit()
-                        print("Attendance Saved") 
+
                         attendance_saved = True
 
                         winsound.Beep(1000, 500)
 
-                top, right, bottom, left = face_location
+                        print("New Attendance Saved")
+                        cursor.execute(
+                            """
+                            SELECT parent_mobile
+                            FROM students
+                            WHERE id=%s
+                            """,
+                           (student_id,)
+                        )
 
-                cv2.rectangle(
+                        parent = cursor.fetchone()
+
+                        if parent and parent[0]:
+
+                         cursor.execute("""
+                           SELECT
+                             DATE_FORMAT(attendance_date, '%d-%m-%Y'),
+                             TIME_FORMAT(attendance_time, '%h:%i %p')
+                           FROM attendance
+                           WHERE student_id=%s
+                           AND attendance_date=CURDATE()
+                         """, (student_id,))
+
+                         attendance_data = cursor.fetchone()
+
+                         attendance_date = attendance_data[0]
+                         attendance_time = attendance_data[1]
+
+                         send_whatsapp_message(
+                           parent[0],
+                           name,
+                           attendance_date,
+                           attendance_time,
+                           "student_present"
+                        )
+
+                    # Agar Absent hai to Present bana do
+                    elif already[0] == "Absent":
+
+                      cursor.execute("""
+                         UPDATE attendance
+                         SET
+                            status='Present',
+                            attendance_time=CURTIME()
+                        WHERE student_id=%s
+                        AND attendance_date=CURDATE()
+                      """, (student_id,))
+
+                      db.commit()
+
+                      attendance_saved = True
+
+                      winsound.Beep(1000, 500)
+
+                      print("Attendance Updated : Absent -> Present")
+                      cursor.execute(
+                        """
+                        SELECT parent_mobile
+                        FROM students
+                        WHERE id=%s
+                        """,
+                        (student_id,)
+                      )
+
+                      parent = cursor.fetchone()
+
+                      if parent and parent[0]:
+
+                        cursor.execute("""
+                          SELECT
+                             DATE_FORMAT(attendance_date, '%d-%m-%Y'),
+                             TIME_FORMAT(attendance_time, '%h:%i %p')
+                          FROM attendance
+                          WHERE student_id=%s
+                          AND attendance_date=CURDATE()
+                        """, (student_id,))
+
+                        attendance_data = cursor.fetchone()
+
+                        attendance_date = attendance_data[0]
+                        attendance_time = attendance_data[1]
+
+                        send_whatsapp_message(
+                             parent[0],
+                             name,
+                             attendance_date,
+                             attendance_time,
+                             "student_present"
+                        )
+                     # Agar pehle se Present hai
+                    else:
+
+                     print("Attendance Already Present")
+                    top, right, bottom, left = face_location
+
+                    cv2.rectangle(
                     frame,
                     (left, top),
                     (right, bottom),
                     (0,255,0),
                     2
-                )
+                    )
 
-                cv2.putText(
+                    cv2.putText(
                     frame,
                     name,
                     (left, top-10),
@@ -547,35 +942,35 @@ def start_attendance():
                     0.8,
                     (0,255,0),
                     2
-                )
+                    )
 
-                if attendance_saved:
+                    if attendance_saved:
 
-                    cv2.circle(
+                     cv2.circle(
                         frame,
                         (right+20, top+20),
                         18,
                         (0,255,0),
                         -1
-                    )
+                     )
 
-                    cv2.line(
+                     cv2.line(
                         frame,
                         (right+15, top+20),
                         (right+20, top+25),
                         (255,255,255),
                         2
-                    )
+                      )
 
-                    cv2.line(
+                     cv2.line(
                         frame,
                         (right+20, top+25),
                         (right+30, top+12),
                         (255,255,255),
                         2
-                    )
+                     )
 
-                    cv2.putText(
+                     cv2.putText(
                         frame,
                         "Attendance Marked Successfully",
                         (40,40),
@@ -583,16 +978,16 @@ def start_attendance():
                         0.8,
                         (0,255,0),
                         2
-                    )
+                     )
 
-                    cv2.imshow("Smart Attendance", frame)
+                     cv2.imshow("Smart Attendance", frame)
 
-                    cv2.waitKey(2000)
+                     cv2.waitKey(2000)
 
-                    cap.release()
-                    cv2.destroyAllWindows()
+                     cap.release()
+                     cv2.destroyAllWindows()
 
-                    return redirect("/attendance_success")
+                     return redirect("/attendance_success")
 
         cv2.imshow("Smart Attendance", frame)
 
@@ -600,9 +995,104 @@ def start_attendance():
             break
 
     cap.release()
+    
+    
     cv2.destroyAllWindows()
 
-    return redirect("/attendance")    
+    return redirect("/attendance")  
+@app.route("/close_attendance")
+def close_attendance():
+
+    if "admin" not in session:
+        return redirect("/login")
+
+    return render_template("close_attendance.html")  
+@app.route("/confirm_close_attendance")
+def confirm_close_attendance():
+
+    if "admin" not in session:
+        return redirect("/login")
+
+    # Sabhi students nikalo
+    cursor.execute("SELECT id FROM students")
+    students = cursor.fetchall()
+
+    for student in students:
+
+        student_id = student[0]
+
+        # Check karo ki aaj attendance lagi hai ya nahi
+        cursor.execute("""
+            SELECT *
+            FROM attendance
+            WHERE student_id=%s
+            AND attendance_date=CURDATE()
+        """, (student_id,))
+
+        already = cursor.fetchone()
+
+        # Agar attendance nahi lagi hai
+        if not already:
+
+            cursor.execute("""
+                INSERT INTO attendance
+                (student_id, attendance_date, status, attendance_time)
+                VALUES
+                (%s, CURDATE(), 'Absent', CURTIME())
+            """, (student_id,))
+            db.commit()
+
+            cursor.execute("""
+                SELECT student_name, parent_mobile
+                FROM students
+                WHERE id=%s
+            """, (student_id,))
+
+            student_data = cursor.fetchone()
+
+            if student_data and student_data[1]:
+
+                student_name = student_data[0]
+                parent_mobile = student_data[1]
+
+                attendance_date = datetime.now().strftime("%d-%m-%Y")
+                attendance_time = datetime.now().strftime("%I:%M %p")
+
+                send_whatsapp_message(
+                    parent_mobile,
+                    student_name,
+                    attendance_date,
+                    attendance_time,
+                    "student_absent"
+                )
+
+    # Attendance ko Closed mark karo
+    cursor.execute("""
+        INSERT INTO attendance_status
+        (attendance_date, is_closed)
+        VALUES
+        (CURDATE(), 'Yes')
+        ON DUPLICATE KEY UPDATE
+        is_closed='Yes'
+    """)
+
+    db.commit()
+
+    return redirect("/reports")
+@app.route("/reopen_attendance")
+def reopen_attendance():
+
+    if "admin" not in session:
+        return redirect("/login")
+
+    cursor.execute("""
+        DELETE FROM attendance_status
+        WHERE attendance_date = CURDATE()
+    """)
+
+    db.commit()
+
+    return redirect("/attendance")
 @app.route("/logout")
 def logout():
 

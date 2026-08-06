@@ -37,7 +37,8 @@
             <input
                 type="text"
                 name="search"
-                placeholder="Search by Name or Roll Number">
+                placeholder="Search by Name or Roll Number"
+                value="{{ request.args.get('search','') }}">
 
             <button type="submit">Search</button>
 
@@ -54,7 +55,8 @@
                 <th>Class</th>
                 <th>Section</th>
                 <th>Father's Name</th>
-                <th>Mobile</th>
+                <th>Parent Mobile</th>
+                <th>Student Mobile</th>
                 <th>Photo</th>
                 <th>Action</th>
             </tr>
@@ -70,10 +72,11 @@
                 <td>{{ student[4] }}</td>
                 <td>{{ student[5] }}</td>
                 <td>{{ student[6] }}</td>
+                <td>{{ student[7] }}</td>
 
                 <td>
-                    {% if student[9] %}
-                        <img src="{{ url_for('static', filename='uploads/' + student[9]) }}"
+                    {% if student[10] %}
+                        <img src="{{ url_for('static', filename='uploads/' + student[10]) }}"
                              width="70"
                              height="70"
                              style="border-radius:8px; object-fit:cover;">
