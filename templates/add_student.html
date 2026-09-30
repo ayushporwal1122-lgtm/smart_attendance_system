@@ -1,119 +1,709 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Add Student</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/add_student.css') }}">
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Attendance | Add Student</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/add_student.css') }}">
+
 </head>
+
 
 <body>
 
-<header>
-    <h1>Smart Attendance System</h1>
-</header>
 
-<div class="container">
+<!-- =========================
+     SIDEBAR
+========================= -->
 
-    <aside>
-        <h2>Admin Panel</h2>
+<aside class="sidebar">
 
-        <ul>
-            <li><a href="/dashboard">Dashboard</a></li>
-            <li><a href="/add_student">Add Student</a></li>
-            <li><a href="/view_students">View Students</a></li>
-            <li><a href="/attendance">Attendance</a></li>
-            <li><a href="/reports">Reports</a></li>
-            <li><a href="/logout">Logout</a></li>
-        </ul>
+    <div class="brand">
 
-    </aside>
+        <div class="brand-logo">
+            ✓
+        </div>
 
-    <main>
+        <div>
+            <h2>Smart Attendance</h2>
+            <p>Management System</p>
+        </div>
 
-        <h2>Add Student</h2>
+    </div>
 
-        <form method="POST" enctype="multipart/form-data">
 
-            <div class="row">
+    <div class="menu-title">
+        MAIN MENU
+    </div>
 
-                 <div class="input-box">
-                  <label>Student Name</label>
-                  <input type="text" name="student_name" placeholder="Enter Student Name"required>
+
+    <nav>
+
+        <a href="/dashboard" class="nav-link">
+
+            <span class="nav-icon">⌂</span>
+
+            <span>Dashboard</span>
+
+        </a>
+
+
+        <a href="/add_student" class="nav-link active">
+
+            <span class="nav-icon">＋</span>
+
+            <span>Add Student</span>
+
+        </a>
+
+
+        <a href="/view_students" class="nav-link">
+
+            <span class="nav-icon">♙</span>
+
+            <span>Students</span>
+
+        </a>
+
+
+        <a href="/attendance" class="nav-link">
+
+            <span class="nav-icon">✓</span>
+
+            <span>Attendance</span>
+
+        </a>
+
+
+        <a href="/reports" class="nav-link">
+
+            <span class="nav-icon">▤</span>
+
+            <span>Reports</span>
+
+        </a>
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+        <a href="/logout" class="logout-link">
+
+            <span>↪</span>
+
+            Logout
+
+        </a>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =========================
+     MAIN WRAPPER
+========================= -->
+
+<div class="main-wrapper">
+
+
+    <!-- =========================
+         TOPBAR
+    ========================= -->
+
+    <header class="topbar">
+
+        <div>
+
+            <h1>Add Student</h1>
+
+            <p>
+                Add a new student to the attendance system
+            </p>
+
+        </div>
+
+
+        <div class="admin-profile">
+
+            <div class="admin-avatar">
+                A
+            </div>
+
+            <div>
+
+                <strong>Admin</strong>
+
+                <span>Administrator</span>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================
+         PAGE CONTENT
+    ========================= -->
+
+    <main class="page-content">
+
+
+        <!-- PAGE INTRO -->
+
+        <div class="page-intro">
+
+            <span>
+                STUDENT MANAGEMENT
+            </span>
+
+            <h2>
+                Add New Student
+            </h2>
+
+            <p>
+                Enter the student's details below to create their profile.
+            </p>
+
+        </div>
+
+
+
+        <!-- =========================
+             FORM CARD
+        ========================= -->
+
+        <div class="form-card">
+
+
+            <!-- FORM HEADER -->
+
+            <div class="form-header">
+
+                <div class="form-icon">
+                    +
                 </div>
 
-                <div class="input-box">
-                  <label>Roll Number</label>
-                  <input type="text" name="roll_number" placeholder="Enter Roll Number"required>
+                <div>
+
+                    <h3>
+                        Student Information
+                    </h3>
+
+                    <p>
+                        Fill in all required details
+                    </p>
+
                 </div>
 
             </div>
 
-            <div class="row">
 
-             <div class="input-box">
-               <label>Class</label>
-               <input type="text" name="class_name" placeholder="Enter Class"required>
-            </div>
 
-            <div class="input-box">
-              <label>Section</label>
-              <input type="text" name="section" placeholder="Enter Section"required>
-            </div>
+            <!-- =========================
+                 FORM
+            ========================= -->
 
-            </div>
+            <form
+                method="POST"
+                enctype="multipart/form-data">
 
-            <div class="row">
 
-            <div class="input-box">
-              <label>Father's Name</label>
-              <input type="text" name="father_name" placeholder="Enter Father's Name"required>
-            </div>
+                <!-- ROW 1 -->
 
-            <div class="input-box">
-                <label>Parent Mobile Number</label>
-                <input
-                type="text"
-                name="parent_mobile"
-                placeholder="Enter Parent Mobile Number"
-                maxlength="15"
-                required>
-            </div>
+                <div class="form-row">
 
-            <div class="input-box">
-              <label>Mobile Number</label>
-              <input type="text" name="mobile" placeholder="Enter Mobile Number" maxlength="15" required>
-            </div>
 
-             </div>
+                    <!-- STUDENT NAME -->
 
-            <div class="row">
+                    <div class="input-group">
 
-            <div class="input-box">
-              <label>Email</label>
-              <input type="email" name="email" placeholder="Enter Email" required>
-            </div>
+                        <label for="student_name">
 
-            <div class="input-box">
-              <label>Upload Photo</label>
-              <input type="file" name="photo">
-            </div>
+                            Student Name
 
-            </div>
+                            <span>*</span>
 
-            <div class="input-box">
+                        </label>
 
-              <label>Address</label>
+                        <input
+                            type="text"
+                            id="student_name"
+                            name="student_name"
+                            placeholder="Enter student name"
+                            required>
 
-              <textarea name="address" placeholder="Enter Address"></textarea>
+                    </div>
 
-            </div>
 
-              <button type="submit">Save Student</button>
 
-        </form>
+                    <!-- ROLL NUMBER -->
+
+                    <div class="input-group">
+
+                        <label for="roll_number">
+
+                            Roll Number
+
+                            <span>*</span>
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="roll_number"
+                            name="roll_number"
+                            placeholder="Enter roll number"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ROW 2 -->
+
+                <div class="form-row">
+
+
+                    <!-- CLASS -->
+
+                    <div class="input-group">
+
+                        <label for="class_name">
+
+                            Class
+
+                            <span>*</span>
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="class_name"
+                            name="class_name"
+                            placeholder="Enter class"
+                            required>
+
+                    </div>
+
+
+
+                    <!-- SECTION -->
+
+                    <div class="input-group">
+
+                        <label for="section">
+
+                            Section
+
+                            <span>*</span>
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="section"
+                            name="section"
+                            placeholder="Enter section"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ROW 3 -->
+
+                <div class="form-row">
+
+
+                    <!-- FATHER NAME -->
+
+                    <div class="input-group">
+
+                        <label for="father_name">
+
+                            Father's Name
+
+                            <span>*</span>
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="father_name"
+                            name="father_name"
+                            placeholder="Enter father's name"
+                            required>
+
+                    </div>
+
+
+
+                    <!-- PARENT MOBILE -->
+
+                    <div class="input-group">
+
+                        <label for="parent_mobile">
+
+                            Parent Mobile Number
+
+                            <span>*</span>
+
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="parent_mobile"
+                            name="parent_mobile"
+                            placeholder="Enter parent mobile number"
+                            maxlength="15"
+                            pattern="[0-9]{10,15}"
+                            inputmode="numeric"
+                            required>
+
+                        <small class="field-hint">
+                            Example: 919829607883
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ROW 4 -->
+
+                <div class="form-row">
+
+
+                    <!-- STUDENT MOBILE -->
+
+                    <div class="input-group">
+
+                        <label for="mobile">
+
+                            Student Mobile Number
+
+                            <span>*</span>
+
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="mobile"
+                            name="mobile"
+                            placeholder="Enter student mobile number"
+                            maxlength="15"
+                            pattern="[0-9]{10,15}"
+                            inputmode="numeric"
+                            required>
+
+                    </div>
+
+
+
+                    <!-- EMAIL -->
+
+                    <div class="input-group">
+
+                        <label for="email">
+
+                            Email
+
+                            <span>*</span>
+
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter email address"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =========================
+                     PHOTO UPLOAD
+                ========================= -->
+
+                <div class="photo-section">
+
+                    <div class="input-group photo-group">
+
+                        <label for="photo">
+
+                            Student Photo
+
+                        </label>
+
+
+                        <div class="upload-box">
+
+
+                            <div class="upload-icon">
+                                ↑
+                            </div>
+
+
+                            <div class="upload-text">
+
+                                <strong>
+                                    Upload Student Photo
+                                </strong>
+
+                                <small>
+                                    Clear front-facing photo · JPG, JPEG or PNG
+                                </small>
+
+                            </div>
+
+
+                            <!-- PHOTO PREVIEW -->
+
+                            <div
+                                class="photo-preview"
+                                id="photoPreview">
+
+                                <span>
+                                    Preview
+                                </span>
+
+                            </div>
+
+
+                            <input
+                                type="file"
+                                id="photo"
+                                name="photo"
+                                accept="image/jpeg,image/jpg,image/png">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =========================
+                     ADDRESS
+                ========================= -->
+
+                <div class="input-group address-group">
+
+                    <label for="address">
+
+                        Address
+
+                    </label>
+
+
+                    <textarea
+                        id="address"
+                        name="address"
+                        placeholder="Enter student's address"></textarea>
+
+                </div>
+
+
+
+                <!-- =========================
+                     FORM FOOTER
+                ========================= -->
+
+                <div class="form-footer">
+
+
+                    <p>
+
+                        <span>*</span>
+
+                        Required fields
+
+                    </p>
+
+
+                    <button
+                        type="submit"
+                        class="save-button">
+
+                        <span>
+                            Save Student
+                        </span>
+
+                        <span class="arrow">
+                            →
+                        </span>
+
+                    </button>
+
+                </div>
+
+
+            </form>
+
+        </div>
 
     </main>
 
 </div>
 
+
+
+<!-- =========================
+     PHOTO PREVIEW JAVASCRIPT
+========================= -->
+
+<script>
+
+const photoInput =
+    document.getElementById("photo");
+
+const photoPreview =
+    document.getElementById("photoPreview");
+
+const uploadBox =
+    document.querySelector(".upload-box");
+
+
+photoInput.addEventListener("change", function () {
+
+    const file = this.files[0];
+
+
+    if (!file) {
+
+        photoPreview.innerHTML =
+            "<span>Preview</span>";
+
+        uploadBox.classList.remove("has-photo");
+
+        return;
+
+    }
+
+
+    /* Allowed file types */
+
+    const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png"
+    ];
+
+
+    if (!allowedTypes.includes(file.type)) {
+
+        alert(
+            "Please select JPG, JPEG or PNG image."
+        );
+
+        this.value = "";
+
+        photoPreview.innerHTML =
+            "<span>Preview</span>";
+
+        uploadBox.classList.remove("has-photo");
+
+        return;
+
+    }
+
+
+    /* File size check */
+
+    const maxSize =
+        5 * 1024 * 1024;
+
+
+    if (file.size > maxSize) {
+
+        alert(
+            "Photo size should be less than 5 MB."
+        );
+
+        this.value = "";
+
+        photoPreview.innerHTML =
+            "<span>Preview</span>";
+
+        uploadBox.classList.remove("has-photo");
+
+        return;
+
+    }
+
+
+    /* Preview */
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload = function (event) {
+
+        photoPreview.innerHTML = `
+
+            <img
+                src="${event.target.result}"
+                alt="Student Photo">
+
+        `;
+
+        uploadBox.classList.add("has-photo");
+
+    };
+
+
+    reader.readAsDataURL(file);
+
+});
+
+
+
+/* =========================
+   MOBILE NUMBER VALIDATION
+========================= */
+
+const mobileInputs = [
+    document.getElementById("parent_mobile"),
+    document.getElementById("mobile")
+];
+
+
+mobileInputs.forEach(function (input) {
+
+    input.addEventListener("input", function () {
+
+        this.value =
+            this.value.replace(/\D/g, "");
+
+    });
+
+});
+
+</script>
+
+
 </body>
+
 </html>

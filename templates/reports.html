@@ -1,172 +1,738 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Attendance Reports</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/reports.css') }}">
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Attendance | Reports</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/reports.css') }}">
+
 </head>
+
 
 <body>
 
-<header>
-    <h1>Smart Attendance System</h1>
-</header>
 
-<div class="container">
+<!-- =========================
+     SIDEBAR
+========================= -->
 
-    <aside>
+<aside class="sidebar">
 
-        <h2>Admin Panel</h2>
+    <div class="brand">
 
-        <ul>
-            <li><a href="/dashboard">Dashboard</a></li>
-            <li><a href="/add_student">Add Student</a></li>
-            <li><a href="/view_students">View Students</a></li>
-            <li><a href="/attendance">Attendance</a></li>
-            <li><a href="/reports">Reports</a></li>
-            <li><a href="/logout">Logout</a></li>
-        </ul>
+        <div class="brand-logo">
+            ✓
+        </div>
 
-    </aside>
+        <div>
+            <h2>Smart Attendance</h2>
+            <p>Management System</p>
+        </div>
 
-    <main>
+    </div>
 
-        <h2>Attendance Reports</h2>
-          <div style="margin-bottom:20px;">
 
-             <a href="/export_excel">
-              <button style="
-                background:#198754;
-                color:white;
-                border:none;
-                padding:10px 20px;
-                border-radius:5px;
-                cursor:pointer;">
-                📥 Download Excel
-              </button>
-              </a>
+    <div class="menu-title">
+        MAIN MENU
+    </div>
 
-              <a href="/export_pdf">
-               <button style="
-                 background:#dc3545;
-                 color:white;
-                 border:none;
-                 padding:10px 20px;
-                 border-radius:5px;
-                 cursor:pointer;
-                 margin-left:10px;">
-                 📄 Download PDF
-              </button>
+
+    <nav>
+
+        <a href="/dashboard" class="nav-link">
+
+            <span class="nav-icon">⌂</span>
+
+            <span>Dashboard</span>
+
+        </a>
+
+
+        <a href="/add_student" class="nav-link">
+
+            <span class="nav-icon">＋</span>
+
+            <span>Add Student</span>
+
+        </a>
+
+
+        <a href="/view_students" class="nav-link">
+
+            <span class="nav-icon">♙</span>
+
+            <span>Students</span>
+
+        </a>
+
+
+        <a href="/attendance" class="nav-link">
+
+            <span class="nav-icon">✓</span>
+
+            <span>Attendance</span>
+
+        </a>
+
+
+        <a href="/reports" class="nav-link active">
+
+            <span class="nav-icon">▤</span>
+
+            <span>Reports</span>
+
+        </a>
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+        <a href="/logout" class="logout-link">
+
+            <span>↪</span>
+
+            Logout
+
+        </a>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =========================
+     MAIN AREA
+========================= -->
+
+<div class="main-wrapper">
+
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+        <div>
+
+            <h1>Reports</h1>
+
+            <p>
+                View and analyze attendance records
+            </p>
+
+        </div>
+
+
+        <div class="admin-profile">
+
+            <div class="admin-avatar">
+                A
+            </div>
+
+            <div>
+
+                <strong>Admin</strong>
+
+                <span>Administrator</span>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================
+         CONTENT
+    ========================= -->
+
+    <main class="reports-content">
+
+
+        <!-- PAGE HEADING -->
+
+        <section class="page-heading">
+
+            <div>
+
+                <span class="page-tag">
+                    ATTENDANCE MANAGEMENT
+                </span>
+
+                <h2>
+                    Attendance Reports
+                </h2>
+
+                <p>
+                    Search attendance records and view student-wise summaries.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             EXPORT CARD
+        ========================= -->
+
+        <section class="export-card">
+
+            <div>
+
+                <h3>
+                    Export Reports
+                </h3>
+
+                <p>
+                    Download attendance data for further use.
+                </p>
+
+            </div>
+
+
+            <div class="export-buttons">
+
+                <a href="/export_excel"
+                   class="export-btn excel-btn">
+
+                    <span class="export-icon">
+                        📥
+                    </span>
+
+                    <span>
+
+                        <strong>
+                            Download Excel
+                        </strong>
+
+                        <small>
+                            Export attendance data
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+                <a href="/export_pdf"
+                   class="export-btn pdf-btn">
+
+                    <span class="export-icon">
+                        📄
+                    </span>
+
+                    <span>
+
+                        <strong>
+                            Download PDF
+                        </strong>
+
+                        <small>
+                            Generate attendance report
+                        </small>
+
+                    </span>
+
                 </a>
 
             </div>
-      <form method="POST">
 
-           <label><b>Student Name:</b></label>
-              <input
-                type="text"
-                name="student_name"
-                placeholder="Enter Student Name">
+        </section>
 
-            <label style="margin-left:15px;">
-            <b>Roll No:</b>
-            </label>
 
-              <input
-                 type="text"
-                 name="roll_number"
-                 placeholder="Enter Roll No">
 
-             <label style="margin-left:15px;">
-              <b>Form Date:</b>
-            </label>
+        <!-- =========================
+             FILTER CARD
+        ========================= -->
 
-             <input
-               type="date"
-               name="from_date">
-            <label style="margin-left:15px;">
-             <b>To Date:</b>
-             </label>
+        <section class="filter-card">
 
-              <input
-                type="date"
-                name="to_date">
 
-        <button type="submit">
-          Search
-       </button>
-       <a href="/reports">
-        <button
-            type="button"
-            style="
-               background:#6c757d;
-               color:white;
-               border:none;
-               padding:8px 18px;
-               border-radius:5px;
-               cursor:pointer;
-               margin-left:8px;">
-            Reset
-        </button>
-       </a>
+            <div class="filter-header">
 
-       </form>
+                <div>
 
-         <br>
-        <table>
+                    <h3>
+                        Search Attendance
+                    </h3>
 
-            <tr>
-                <th>Student Name</th>
-                <th>Roll No</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Time</th>
-            </tr>
+                    <p>
+                        Filter records by student or date range.
+                    </p>
 
-            {% for record in records %}
+                </div>
 
-            <tr>
-                <td>{{ record[0] }}</td>
-                <td>{{ record[1] }}</td>
-                <td>{{ record[2] }}</td>
-                <td>{{ record[3] }}</td>
-                <td>{{ record[4] }}</td>
-            </tr>
+            </div>
 
-            {% endfor %}
 
-        </table>
 
-        <br><br>
+            <form method="POST"
+                  class="filter-form">
 
-        <h2>Student Attendance Summary</h2>
 
-        <table>
+                <!-- STUDENT NAME -->
 
-            <tr>
-                <th>Student Name</th>
-                <th>Present</th>
-                <th>Absent</th>
-                <th>Attendance %</th>
-                <th>Status</th>
-            </tr>
+                <div class="filter-group">
 
-            {% for item in summary %}
+                    <label>
+                        Student Name
+                    </label>
 
-            <tr>
-                <td>{{ item[0] }}</td>
-                <td>{{ item[1] }}</td>
-                <td>{{ item[2] }}</td>
-                <td>{{ item[3] }}%</td>
-                <td>{{ item[4] }}</td>
-            </tr>
+                    <input
+                        type="text"
+                        name="student_name"
+                        placeholder="Enter Student Name">
 
-            {% endfor %}
+                </div>
 
-        </table>
+
+
+                <!-- ROLL NUMBER -->
+
+                <div class="filter-group">
+
+                    <label>
+                        Roll No
+                    </label>
+
+                    <input
+                        type="text"
+                        name="roll_number"
+                        placeholder="Enter Roll No">
+
+                </div>
+
+
+
+                <!-- FROM DATE -->
+
+                <div class="filter-group">
+
+                    <label>
+                        From Date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="from_date">
+
+                </div>
+
+
+
+                <!-- TO DATE -->
+
+                <div class="filter-group">
+
+                    <label>
+                        To Date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="to_date">
+
+                </div>
+
+
+
+                <!-- BUTTONS -->
+
+                <div class="filter-buttons">
+
+                    <button
+                        type="submit"
+                        class="search-btn">
+
+                        🔍 Search
+
+                    </button>
+
+
+                    <a href="/reports"
+                       class="reset-btn">
+
+                        ↻ Reset
+
+                    </a>
+
+                </div>
+
+
+            </form>
+
+        </section>
+
+
+
+        <!-- =========================
+             ATTENDANCE RECORDS
+        ========================= -->
+
+        <section class="report-card">
+
+
+            <div class="report-card-header">
+
+                <div>
+
+                    <h3>
+                        Attendance Records
+                    </h3>
+
+                    <p>
+                        Detailed attendance history
+                    </p>
+
+                </div>
+
+
+                <div class="record-count">
+
+                    <span>
+                        Records
+                    </span>
+
+                    <strong>
+                        {{ records|length }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Student Name
+                            </th>
+
+                            <th>
+                                Roll No
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Time
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    {% for record in records %}
+
+                        <tr>
+
+                            <td>
+
+                                <div class="student-name">
+
+                                    <div class="student-avatar">
+
+                                        {{ record[0][0]|upper }}
+
+                                    </div>
+
+                                    <strong>
+                                        {{ record[0] }}
+                                    </strong>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="roll-number">
+                                    {{ record[1] }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="date-value">
+                                    {{ record[2] }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                {% if record[3] == "Present" %}
+
+                                    <span class="status-badge present">
+                                        ✓ Present
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="status-badge absent">
+                                        ✕ Absent
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="time-value">
+                                    {{ record[4] }}
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+
+                    {% else %}
+
+                        <tr>
+
+                            <td colspan="5"
+                                class="empty-state">
+
+                                <div class="empty-icon">
+                                    ▤
+                                </div>
+
+                                <strong>
+                                    No attendance records found
+                                </strong>
+
+                                <p>
+                                    Try changing your search filters.
+                                </p>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =========================
+             SUMMARY
+        ========================= -->
+
+        <section class="report-card summary-card">
+
+
+            <div class="report-card-header">
+
+                <div>
+
+                    <h3>
+                        Student Attendance Summary
+                    </h3>
+
+                    <p>
+                        Student-wise attendance performance
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Student Name
+                            </th>
+
+                            <th>
+                                Present
+                            </th>
+
+                            <th>
+                                Absent
+                            </th>
+
+                            <th>
+                                Attendance %
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    {% for item in summary %}
+
+                        <tr>
+
+                            <td>
+
+                                <div class="student-name">
+
+                                    <div class="student-avatar">
+
+                                        {{ item[0][0]|upper }}
+
+                                    </div>
+
+                                    <strong>
+                                        {{ item[0] }}
+                                    </strong>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="count-present">
+                                    {{ item[1] }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="count-absent">
+                                    {{ item[2] }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <strong class="percentage">
+                                    {{ item[3] }}%
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+
+                                {% if item[4] == "Good" %}
+
+                                    <span class="summary-status good">
+                                        {{ item[4] }}
+                                    </span>
+
+                                {% elif item[4] == "Average" %}
+
+                                    <span class="summary-status average">
+                                        {{ item[4] }}
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="summary-status low">
+                                        {{ item[4] }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+
+                    {% else %}
+
+                        <tr>
+
+                            <td colspan="5"
+                                class="empty-state">
+
+                                <div class="empty-icon">
+                                    ▤
+                                </div>
+
+                                <strong>
+                                    No summary available
+                                </strong>
+
+                                <p>
+                                    Attendance summary will appear here.
+                                </p>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        </section>
+
 
     </main>
 
 </div>
 
+
 </body>
+
 </html>

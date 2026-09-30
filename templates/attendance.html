@@ -1,132 +1,560 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Attendance</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/view_students.css') }}">
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Attendance | Attendance</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/attendance.css') }}">
+
 </head>
+
 
 <body>
 
-<header>
-    <h1>Smart Attendance System</h1>
-</header>
 
-<div class="container">
+<!-- =========================
+     SIDEBAR
+========================= -->
 
-    <aside>
+<aside class="sidebar">
 
-        <h2>Admin Panel</h2>
+    <div class="brand">
 
-        <ul>
-            <li><a href="/dashboard">Dashboard</a></li>
-            <li><a href="/add_student">Add Student</a></li>
-            <li><a href="/view_students">View Students</a></li>
-            <li><a href="/attendance">Attendance</a></li>
-            <li><a href="/reports">Reports</a></li>
-            <li><a href="/logout">Logout</a></li>
-        </ul>
+        <div class="brand-logo">
+            ✓
+        </div>
 
-    </aside>
+        <div>
+            <h2>Smart Attendance</h2>
+            <p>Management System</p>
+        </div>
 
-    <main>
+    </div>
 
-        <h2>Mark Attendance</h2>
-        
-          <br>
 
-           <a href="/start_attendance"
-             style="background:#28a745;
-             color:white;
-             padding:10px 20px;
-             text-decoration:none;
-             border-radius:5px;
-             font-weight:bold;
-             margin-right:10px;">
-             🎥 Start Face Attendance
-            </a>
-             
-            <a href="/close_attendance"
-             style="background:#dc3545;
-             color:white;
-             padding:10px 20px;
-             text-decoration:none;
-             border-radius:5px;
-             font-weight:bold;">
-             ✅ Close Attendance
-            </a>
-            <a href="/reopen_attendance"
-               style="background:#0d6efd;
-               color:white;               
-               padding:10px 20px;
-               text-decoration:none;
-               border-radius:5px;
-               font-weight:bold;
-               margin-left:10px;">
-               🔓 Reopen Attendance
-            </a>
+    <div class="menu-title">
+        MAIN MENU
+    </div>
 
-           <br><br>
-           <p style="color:red;">
-             ⚠ If face is not detected or student photo is unavailable,
-             use Manual Attendance below.
-           </p>
 
-          <br><br>
+    <nav>
 
-        <form action="/save_attendance" method="POST">
+        <a href="/dashboard" class="nav-link">
 
-            <table>
+            <span class="nav-icon">⌂</span>
 
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Roll No</th>
-                    <th>Class</th>
-                    <th>Section</th>
-                    <th>Attendance</th>
-                </tr>
+            <span>Dashboard</span>
 
-                {% for student in students %}
+        </a>
 
-                <tr>
 
-                    <td>
-                     {{ student[0] }}
-                       <input type="hidden" name="student_id" value="{{ student[0] }}">
-                    </td>
-                    <td>{{ student[1] }}</td>
-                    <td>{{ student[2] }}</td>
-                    <td>{{ student[3] }}</td>
-                    <td>{{ student[4] }}</td>
+        <a href="/add_student" class="nav-link">
 
-                    <td>
-                        <input type="radio"
-                               name="attendance_{{ student[0] }}"
-                               value="Present"
-                               checked> Present
+            <span class="nav-icon">＋</span>
 
-                        <input type="radio"
-                               name="attendance_{{ student[0] }}"
-                               value="Absent"> Absent
-                    </td>
+            <span>Add Student</span>
 
-                </tr>
+        </a>
 
-                {% endfor %}
 
-            </table>
+        <a href="/view_students" class="nav-link">
 
-            <br>
+            <span class="nav-icon">♙</span>
 
-            <button type="submit">
-                Save Attendance
-            </button>
+            <span>Students</span>
 
-        </form>
+        </a>
+
+
+        <a href="/attendance" class="nav-link active">
+
+            <span class="nav-icon">✓</span>
+
+            <span>Attendance</span>
+
+        </a>
+
+
+        <a href="/reports" class="nav-link">
+
+            <span class="nav-icon">▤</span>
+
+            <span>Reports</span>
+
+        </a>
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+        <a href="/logout" class="logout-link">
+
+            <span>↪</span>
+
+            Logout
+
+        </a>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =========================
+     MAIN AREA
+========================= -->
+
+<div class="main-wrapper">
+
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+        <div>
+
+            <h1>Attendance</h1>
+
+            <p>
+                Manage today's student attendance
+            </p>
+
+        </div>
+
+
+        <div class="admin-profile">
+
+            <div class="admin-avatar">
+                A
+            </div>
+
+            <div>
+
+                <strong>Admin</strong>
+
+                <span>Administrator</span>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================
+         CONTENT
+    ========================= -->
+
+    <main class="attendance-content">
+
+
+        <!-- PAGE HEADER -->
+
+        <section class="page-heading">
+
+            <div>
+
+                <span class="page-tag">
+                    ATTENDANCE MANAGEMENT
+                </span>
+
+                <h2>
+                    Mark Attendance
+                </h2>
+
+                <p>
+                    Use face recognition or manually mark
+                    attendance for students.
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             ACTION BUTTONS
+        ========================= -->
+
+        <section class="action-card">
+
+            <div class="action-header">
+
+                <div>
+
+                    <h3>Attendance Actions</h3>
+
+                    <p>
+                        Choose how you want to manage today's attendance.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="action-buttons">
+
+
+                <a href="/start_attendance"
+                   class="action-btn face-btn">
+
+                    <span class="action-icon">
+                        🎥
+                    </span>
+
+                    <span>
+
+                        <strong>
+                            Start Face Attendance
+                        </strong>
+
+                        <small>
+                            Mark attendance using face recognition
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+
+                <a href="/close_attendance"
+                   class="action-btn close-btn">
+
+                    <span class="action-icon">
+                        ✓
+                    </span>
+
+                    <span>
+
+                        <strong>
+                            Close Attendance
+                        </strong>
+
+                        <small>
+                            Mark remaining students absent
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+
+                <a href="/reopen_attendance"
+                   class="action-btn reopen-btn">
+
+                    <span class="action-icon">
+                        🔓
+                    </span>
+
+                    <span>
+
+                        <strong>
+                            Reopen Attendance
+                        </strong>
+
+                        <small>
+                            Allow attendance marking again
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             WARNING
+        ========================= -->
+
+        <div class="attendance-warning">
+
+            <span class="warning-icon">
+                ⚠
+            </span>
+
+            <div>
+
+                <strong>
+                    Manual Attendance
+                </strong>
+
+                <p>
+                    If face is not detected or a student photo
+                    is unavailable, use the manual attendance
+                    options below.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =========================
+             STUDENT ATTENDANCE
+        ========================= -->
+
+        <section class="attendance-card">
+
+
+            <div class="attendance-card-header">
+
+                <div>
+
+                    <h3>
+                        Student Attendance
+                    </h3>
+
+                    <p>
+                        Select Present or Absent for each student.
+                    </p>
+
+                </div>
+
+
+                <div class="student-count">
+
+                    <span>
+                        Students
+                    </span>
+
+                    <strong>
+                        {{ students|length }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- FORM -->
+
+            <form action="/save_attendance"
+                  method="POST">
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>ID</th>
+
+                                <th>Student</th>
+
+                                <th>Roll No</th>
+
+                                <th>Class</th>
+
+                                <th>Section</th>
+
+                                <th>Attendance</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                        {% for student in students %}
+
+                            <tr>
+
+
+                                <!-- ID -->
+
+                                <td>
+
+                                    <span class="student-id">
+                                        {{ student[0] }}
+                                    </span>
+
+                                    <input
+                                        type="hidden"
+                                        name="student_id"
+                                        value="{{ student[0] }}">
+
+                                </td>
+
+
+
+                                <!-- NAME -->
+
+                                <td>
+
+                                    <div class="student-name">
+
+                                        <div class="student-avatar">
+
+                                            {{ student[1][0]|upper }}
+
+                                        </div>
+
+                                        <strong>
+                                            {{ student[1] }}
+                                        </strong>
+
+                                    </div>
+
+                                </td>
+
+
+
+                                <!-- ROLL -->
+
+                                <td>
+
+                                    <span class="roll-number">
+                                        {{ student[2] }}
+                                    </span>
+
+                                </td>
+
+
+
+                                <!-- CLASS -->
+
+                                <td>
+
+                                    {{ student[3] }}
+
+                                </td>
+
+
+
+                                <!-- SECTION -->
+
+                                <td>
+
+                                    <span class="section-badge">
+                                        {{ student[4] }}
+                                    </span>
+
+                                </td>
+
+
+
+                                <!-- ATTENDANCE -->
+
+                                <td>
+
+                                    <div class="attendance-options">
+
+
+                                        <label class="radio-option present-option">
+
+                                            <input
+                                                type="radio"
+                                                name="attendance_{{ student[0] }}"
+                                                value="Present"
+                                                checked>
+
+                                            <span class="radio-custom"></span>
+
+                                            <span>
+                                                Present
+                                            </span>
+
+                                        </label>
+
+
+
+                                        <label class="radio-option absent-option">
+
+                                            <input
+                                                type="radio"
+                                                name="attendance_{{ student[0] }}"
+                                                value="Absent">
+
+                                            <span class="radio-custom"></span>
+
+                                            <span>
+                                                Absent
+                                            </span>
+
+                                        </label>
+
+
+                                    </div>
+
+                                </td>
+
+
+                            </tr>
+
+                        {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+
+                <!-- SAVE -->
+
+                <div class="save-section">
+
+                    <div class="save-info">
+
+                        <span>
+                            ✓
+                        </span>
+
+                        Attendance will be saved
+                        to the database.
+
+                    </div>
+
+
+                    <button type="submit"
+                            class="save-btn">
+
+                        <span>✓</span>
+
+                        Save Attendance
+
+                    </button>
+
+                </div>
+
+
+            </form>
+
+
+        </section>
+
 
     </main>
 
 </div>
 
+
 </body>
+
 </html>

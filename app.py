@@ -10,77 +10,97 @@ from reportlab.lib import colors
 import pandas as pd
 from flask import send_file
 import os
+from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 from flask import Flask, render_template, request, redirect, session
 from datetime import date
 import mysql.connector
 import requests
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = "smart_attendance_secret_key"
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
 # WhatsApp API Configuration
-ACCESS_TOKEN = "EAAYVdHhdZBKIBSHWZASZAVBaz0sJPJWAErbf8En9OXyZCGjSaWDoMqfNl0v57vmAKHNyt6ZCkkeW6GHbu7I7VyPFhTPgzKXqozDJBXR6U2CcZBUwipRZAZAkZCzGT8CcP0MAJ2yxqwDDXZAk5O9a26XFqsLqa6j5b7LaS2XRJaZCsAc7Sjyv6PXz7Kvy6bm8NZBfNPR3iwtZCR6E1Gj9sgACbNZBQIJEnMZCFnZCworb0l0uYYCE0n0Nh08UFJrFZADcBqE01VstKGSHKllVzCjpgoxl8wokTf2HZA"
+ACCESS_TOKEN = os.getenv("WHATSAPP_ACCESS_TOKEN")
 
-PHONE_NUMBER_ID = "1328142043705318"
+PHONE_NUMBER_ID = os.getenv("PHONE_NUMBER_ID")
 
 WHATSAPP_URL = f"https://graph.facebook.com/v23.0/{PHONE_NUMBER_ID}/messages"
-def send_whatsapp_message(phone, student_name, attendance_date, attendance_time, template_name):
+def send_whatsapp_message(phone, student_name, attendance_date, attendance_time=None, template_name="student_present"):
+    try:
+        # 1. Phone number clean & format (10-digit number me automatically 91 country code lagana)
+        clean_phone = str(phone).strip().replace("+", "").replace(" ", "").replace("-", "")
+        if len(clean_phone) == 10:
+            clean_phone = "91" + clean_phone
 
-    headers = {
-        "Authorization": f"Bearer {ACCESS_TOKEN}",
-        "Content-Type": "application/json"
-    }
-
-    data = {
-        "messaging_product": "whatsapp",
-        "to": phone,
-        "type": "template",
-        "template": {
-            "name": template_name,
-            "language": {
-                "code": "en"
-            },
-            "components": [
-                {
-                    "type": "body",
-                    "parameters": [
-                        {
-                            "type": "text",
-                            "text": student_name
-                        },
-                        {
-                            "type": "text",
-                            "text": attendance_date
-                        },
-                        {
-                            "type": "text",
-                            "text": attendance_time
-                        }
-                    ]
-                }
+        # 2. Template ke hisab se dynamic parameters taiyar karna
+        if template_name == "student_present":
+            # Present template expects 3 parameters: Student Name, Date, Time
+            parameters = [
+                {"type": "text", "text": str(student_name)},
+                {"type": "text", "text": str(attendance_date)},
+                {"type": "text", "text": str(attendance_time) if attendance_time else ""}
             ]
+        elif template_name == "student_absent":
+            # Absent template expects 2 parameters: Student Name, Date
+            parameters = [
+                {"type": "text", "text": str(student_name)},
+                {"type": "text", "text": str(attendance_date)}
+            ]
+        else:
+            # Future templates ke liye generic fallback
+            parameters = [
+                {"type": "text", "text": str(student_name)},
+                {"type": "text", "text": str(attendance_date)}
+            ]
+            if attendance_time:
+                parameters.append({"type": "text", "text": str(attendance_time)})
+
+        headers = {
+            "Authorization": f"Bearer {ACCESS_TOKEN}",
+            "Content-Type": "application/json"
         }
-    }
 
-    response = requests.post(
-        WHATSAPP_URL,
-        headers=headers,
-        json=data
-    )
+        data = {
+            "messaging_product": "whatsapp",
+            "to": clean_phone,
+            "type": "template",
+            "template": {
+                "name": template_name,
+                "language": {
+                    "code": "en"
+                },
+                "components": [
+                    {
+                        "type": "body",
+                        "parameters": parameters
+                    }
+                ]
+            }
+        }
 
-    print("Status:", response.status_code)
-    print("Response:", response.text)
-    
-    if response.status_code == 200:
-        print("✅ WhatsApp Message Sent Successfully")
-    else:
-        print("❌ WhatsApp Message Failed")
+        print(f"\n📱 Sending WhatsApp [{template_name}] to {clean_phone} ({student_name})...")
+        response = requests.post(WHATSAPP_URL, headers=headers, json=data, timeout=10)
+
+        print("Status Code:", response.status_code)
+        print("Response:", response.text)
+
+        if response.status_code == 200:
+            print(f"✅ WhatsApp Message Sent Successfully to {student_name}")
+            return True
+        else:
+            print(f"❌ WhatsApp Message Failed: {response.status_code}")
+            return False
+
+    except Exception as e:
+        print(f"❌ Error sending WhatsApp message: {e}")
+        return False
     
 db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="Ayush@888",
-    database="smart_attendance_db"
+    host=os.getenv("DB_HOST"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    database=os.getenv("DB_NAME")
 )
 
 cursor = db.cursor()
@@ -145,7 +165,10 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        if username == "admin" and password == "admin123":
+        admin_username = os.getenv("ADMIN_USERNAME")
+        admin_password = os.getenv("ADMIN_PASSWORD")
+
+        if username == admin_username and password == admin_password:
 
             session["admin"] = username
             return redirect("/dashboard")
@@ -154,7 +177,6 @@ def login():
             return "Invalid Username or Password"
 
     return render_template("login.html")
-
 @app.route("/dashboard")
 def dashboard():
 
@@ -438,15 +460,17 @@ def save_attendance():
 
         status = request.form.get(f"attendance_{student_id}")
 
-        # Check if attendance already exists today
+        # Check today's attendance and get old status
         cursor.execute("""
-            SELECT id
+            SELECT id, status
             FROM attendance
             WHERE student_id=%s
             AND attendance_date=CURDATE()
         """, (student_id,))
 
         already = cursor.fetchone()
+
+        old_status = None
 
         if not already:
 
@@ -456,7 +480,11 @@ def save_attendance():
                 VALUES (%s, CURDATE(), %s)
             """, (student_id, status))
 
+            should_send_message = True
+
         else:
+
+            old_status = already[1]
 
             cursor.execute("""
                 UPDATE attendance
@@ -465,10 +493,50 @@ def save_attendance():
                 AND attendance_date=CURDATE()
             """, (status, student_id))
 
+            # Send message only if status actually changed
+            should_send_message = old_status != status
+
+        # Get student's name and parent's mobile number
+        cursor.execute("""
+            SELECT student_name, parent_mobile
+            FROM students
+            WHERE id=%s
+        """, (student_id,))
+
+        student_data = cursor.fetchone()
+
+        if should_send_message and student_data and student_data[1]:
+
+            student_name = student_data[0]
+            parent_mobile = student_data[1]
+
+            attendance_date = datetime.now().strftime("%d-%m-%Y")
+            attendance_time = datetime.now().strftime("%I:%M %p")
+
+            # Send WhatsApp according to attendance status
+            if status == "Present":
+
+                send_whatsapp_message(
+                    parent_mobile,
+                    student_name,
+                    attendance_date,
+                    attendance_time,
+                    "student_present"
+                )
+
+            elif status == "Absent":
+
+                send_whatsapp_message(
+                    parent_mobile,
+                    student_name,
+                    attendance_date,
+                    attendance_time,
+                    "student_absent"
+                )
+
     db.commit()
 
     return redirect("/attendance")
-
 @app.route("/reports", methods=["GET", "POST"])
 def reports():
 

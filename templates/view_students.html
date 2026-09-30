@@ -1,113 +1,571 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>View Students</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/view_students.css') }}">
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Attendance | Students</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/view_students.css') }}">
+
 </head>
+
 
 <body>
 
-<header>
-    <h1>Smart Attendance System</h1>
-</header>
 
-<div class="container">
+<!-- =========================
+     SIDEBAR
+========================= -->
 
-    <aside>
+<aside class="sidebar">
 
-        <h2>Admin Panel</h2>
+    <div class="brand">
 
-        <ul>
-            <li><a href="/dashboard">Dashboard</a></li>
-            <li><a href="/add_student">Add Student</a></li>
-            <li><a href="/view_students">View Students</a></li>
-            <li><a href="/attendance">Attendance</a></li>
-            <li><a href="/reports">Reports</a></li>
-            <li><a href="/logout">Logout</a></li>
-        </ul>
+        <div class="brand-logo">
+            ✓
+        </div>
 
-    </aside>
+        <div>
+            <h2>Smart Attendance</h2>
+            <p>Management System</p>
+        </div>
 
-    <main>
+    </div>
 
-        <h2>View Students</h2>
 
-        <form method="GET" action="/view_students" class="search-form">
+    <div class="menu-title">
+        MAIN MENU
+    </div>
 
-            <input
-                type="text"
-                name="search"
-                placeholder="Search by Name or Roll Number"
-                value="{{ request.args.get('search','') }}">
 
-            <button type="submit">Search</button>
+    <nav>
 
-        </form>
+        <a href="/dashboard" class="nav-link">
 
-        <br>
+            <span class="nav-icon">⌂</span>
 
-        <table>
+            <span>Dashboard</span>
 
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Roll No</th>
-                <th>Class</th>
-                <th>Section</th>
-                <th>Father's Name</th>
-                <th>Parent Mobile</th>
-                <th>Student Mobile</th>
-                <th>Photo</th>
-                <th>Action</th>
-            </tr>
+        </a>
 
-            {% for student in students %}
 
-            <tr>
+        <a href="/add_student" class="nav-link">
 
-                <td>{{ student[0] }}</td>
-                <td>{{ student[1] }}</td>
-                <td>{{ student[2] }}</td>
-                <td>{{ student[3] }}</td>
-                <td>{{ student[4] }}</td>
-                <td>{{ student[5] }}</td>
-                <td>{{ student[6] }}</td>
-                <td>{{ student[7] }}</td>
+            <span class="nav-icon">＋</span>
 
-                <td>
-                    {% if student[10] %}
-                        <img src="{{ url_for('static', filename='uploads/' + student[10]) }}"
-                             width="70"
-                             height="70"
-                             style="border-radius:8px; object-fit:cover;">
+            <span>Add Student</span>
+
+        </a>
+
+
+        <a href="/view_students" class="nav-link active">
+
+            <span class="nav-icon">♙</span>
+
+            <span>Students</span>
+
+        </a>
+
+
+        <a href="/attendance" class="nav-link">
+
+            <span class="nav-icon">✓</span>
+
+            <span>Attendance</span>
+
+        </a>
+
+
+        <a href="/reports" class="nav-link">
+
+            <span class="nav-icon">▤</span>
+
+            <span>Reports</span>
+
+        </a>
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+        <a href="/logout" class="logout-link">
+
+            <span>↪</span>
+
+            Logout
+
+        </a>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<div class="main-wrapper">
+
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+        <div>
+
+            <h1>Students</h1>
+
+            <p>
+                Manage student records and information
+            </p>
+
+        </div>
+
+
+        <div class="admin-profile">
+
+            <div class="admin-avatar">
+                A
+            </div>
+
+            <div>
+
+                <strong>Admin</strong>
+
+                <span>Administrator</span>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================
+         CONTENT
+    ========================= -->
+
+    <main class="page-content">
+
+
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <span class="section-label">
+                    STUDENT MANAGEMENT
+                </span>
+
+                <h2>
+                    All Students
+                </h2>
+
+                <p>
+                    View, search, edit and manage student records.
+                </p>
+
+            </div>
+
+
+            <a href="/add_student"
+               class="add-student-btn">
+
+                <span>＋</span>
+
+                Add Student
+
+            </a>
+
+        </div>
+
+
+
+        <!-- =========================
+             STUDENT CARD
+        ========================= -->
+
+        <div class="students-card">
+
+
+            <!-- CARD HEADER -->
+
+            <div class="card-header">
+
+                <div>
+
+                    <h3>
+                        Student Records
+                    </h3>
+
+                    <p>
+                        Manage all registered students
+                    </p>
+
+                </div>
+
+
+                <!-- SEARCH -->
+
+                <form
+                    method="GET"
+                    action="/view_students"
+                    class="search-form">
+
+
+                    <div class="search-box">
+
+                        <span class="search-icon">
+                            ⌕
+                        </span>
+
+
+                        <input
+                            type="text"
+                            name="search"
+                            placeholder="Search by name or roll number"
+                            value="{{ request.args.get('search','') }}">
+
+
+                        {% if request.args.get('search') %}
+
+                        <a href="/view_students"
+                           class="clear-search">
+                            ×
+                        </a>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <button type="submit">
+                        Search
+                    </button>
+
+                </form>
+
+            </div>
+
+
+
+            <!-- =========================
+                 TABLE
+            ========================= -->
+
+            <div class="table-wrapper">
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Student</th>
+
+                            <th>Roll No.</th>
+
+                            <th>Class</th>
+
+                            <th>Section</th>
+
+                            <th>Father's Name</th>
+
+                            <th>Parent Mobile</th>
+
+                            <th>Student Mobile</th>
+
+                            <th>Photo</th>
+
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                    {% for student in students %}
+
+
+                        <tr>
+
+
+                            <!-- ID -->
+
+                            <td>
+
+                                <span class="student-id">
+                                    #{{ student[0] }}
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- NAME -->
+
+                            <td>
+
+                                <div class="student-info">
+
+
+                                    <div class="student-avatar">
+
+
+                                        {% if student[10] %}
+
+                                        <img
+                                            src="{{ url_for('static', filename='uploads/' + student[10]) }}"
+                                            alt="Student Photo">
+
+                                        {% else %}
+
+                                        <span>
+                                            {{ student[1][0]|upper }}
+                                        </span>
+
+                                        {% endif %}
+
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <strong>
+                                            {{ student[1] }}
+                                        </strong>
+
+                                        <small>
+                                            Student
+                                        </small>
+
+                                    </div>
+
+
+                                </div>
+
+                            </td>
+
+
+
+                            <!-- ROLL -->
+
+                            <td>
+
+                                <span class="roll-number">
+                                    {{ student[2] }}
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- CLASS -->
+
+                            <td>
+                                {{ student[3] }}
+                            </td>
+
+
+
+                            <!-- SECTION -->
+
+                            <td>
+
+                                <span class="section-badge">
+                                    {{ student[4] }}
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- FATHER -->
+
+                            <td>
+                                {{ student[5] }}
+                            </td>
+
+
+
+                            <!-- PARENT MOBILE -->
+
+                            <td>
+
+                                {% if student[6] %}
+
+                                <span class="mobile-number">
+                                    {{ student[6] }}
+                                </span>
+
+                                {% else %}
+
+                                <span class="not-available">
+                                    Not Added
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+
+                            <!-- STUDENT MOBILE -->
+
+                            <td>
+
+                                {% if student[7] %}
+
+                                <span class="mobile-number">
+                                    {{ student[7] }}
+                                </span>
+
+                                {% else %}
+
+                                <span class="not-available">
+                                    Not Added
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+
+                            <!-- PHOTO -->
+
+                            <td>
+
+                                {% if student[10] %}
+
+                                <img
+                                    class="table-photo"
+                                    src="{{ url_for('static', filename='uploads/' + student[10]) }}"
+                                    alt="Student Photo">
+
+                                {% else %}
+
+                                <div class="no-photo">
+                                    No Photo
+                                </div>
+
+                                {% endif %}
+
+                            </td>
+
+
+
+                            <!-- ACTIONS -->
+
+                            <td>
+
+                                <div class="actions">
+
+
+                                    <a
+                                        href="/edit_student/{{ student[0] }}"
+                                        class="edit-btn">
+
+                                        ✎
+                                        <span>Edit</span>
+
+                                    </a>
+
+
+                                    <a
+                                        href="/delete_student/{{ student[0] }}"
+                                        class="delete-btn"
+                                        onclick="return confirm('Are you sure you want to delete this student?')">
+
+                                        🗑
+                                        <span>Delete</span>
+
+                                    </a>
+
+
+                                </div>
+
+                            </td>
+
+
+                        </tr>
+
+
                     {% else %}
-                        No Photo
-                    {% endif %}
-                </td>
 
-                <td>
 
-                    <a href="/edit_student/{{ student[0] }}" class="edit-btn">
-                        Edit
-                    </a>
+                        <!-- NO STUDENT -->
 
-                    <a href="/delete_student/{{ student[0] }}"
-                       class="delete-btn"
-                       onclick="return confirm('Are you sure you want to delete this student?')">
-                        Delete
-                    </a>
+                        <tr>
 
-                </td>
+                            <td
+                                colspan="10"
+                                class="empty-state">
 
-            </tr>
 
-            {% endfor %}
+                                <div class="empty-icon">
+                                    ♙
+                                </div>
 
-        </table>
+
+                                <h3>
+                                    No Students Found
+                                </h3>
+
+
+                                <p>
+                                    No student records match your search.
+                                </p>
+
+
+                                <a href="/add_student">
+                                    Add New Student
+                                </a>
+
+
+                            </td>
+
+                        </tr>
+
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+            </div>
+
+
+        </div>
+
 
     </main>
 
 </div>
 
+
 </body>
+
 </html>

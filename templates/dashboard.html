@@ -1,117 +1,507 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Dashboard</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Attendance | Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/dashboard.css') }}">
+
 </head>
+
 
 <body>
 
-<header>
-    <h1>Smart Attendance System</h1>
-</header>
 
-<div class="container">
+<!-- =========================
+     SIDEBAR
+========================= -->
 
-    <aside>
+<aside class="sidebar">
 
-        <h2>Admin Panel</h2>
+    <div class="brand">
 
-        <ul>
-            <li><a href="/dashboard">Dashboard</a></li>
-            <li><a href="/add_student">Add Student</a></li>
-            <li><a href="/view_students">View Students</a></li>
-            <li><a href="/attendance">Attendance</a></li>
-            <li><a href="/reports">Reports</a></li>
-            <li><a href="/logout">Logout</a></li>
-        </ul>
+        <div class="brand-logo">
+            ✓
+        </div>
 
-    </aside>
+        <div>
+            <h2>Smart Attendance</h2>
+            <p>Management System</p>
+        </div>
 
-    <main>
+    </div>
 
-        <h2>Welcome Admin 👋</h2>
 
-        <div class="dashboard-cards">
+    <div class="menu-title">
+        MAIN MENU
+    </div>
 
-            <div class="card">
-                <h3>Total Students</h3>
-                <p>{{ total_students }}</p>
+
+    <nav>
+
+        <a href="/dashboard" class="nav-link active">
+
+            <span class="nav-icon">⌂</span>
+
+            <span>Dashboard</span>
+
+        </a>
+
+
+        <a href="/add_student" class="nav-link">
+
+            <span class="nav-icon">＋</span>
+
+            <span>Add Student</span>
+
+        </a>
+
+
+        <a href="/view_students" class="nav-link">
+
+            <span class="nav-icon">♙</span>
+
+            <span>Students</span>
+
+        </a>
+
+
+        <a href="/attendance" class="nav-link">
+
+            <span class="nav-icon">✓</span>
+
+            <span>Attendance</span>
+
+        </a>
+
+
+        <a href="/reports" class="nav-link">
+
+            <span class="nav-icon">▤</span>
+
+            <span>Reports</span>
+
+        </a>
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+        <a href="/logout" class="logout-link">
+
+            <span>↪</span>
+
+            Logout
+
+        </a>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =========================
+     MAIN AREA
+========================= -->
+
+<div class="main-wrapper">
+
+
+    <!-- TOP BAR -->
+
+    <header class="topbar">
+
+        <div>
+
+            <h1>Dashboard</h1>
+
+            <p>
+                Overview of your attendance system
+            </p>
+
+        </div>
+
+
+        <div class="admin-profile">
+
+            <div class="admin-avatar">
+                A
             </div>
 
-            <div class="card">
-                <h3>Present Today</h3>
-                <p>{{ present_today }}</p>
-            </div>
+            <div>
 
-            <div class="card">
-                <h3>Absent Today</h3>
-                <p>{{ absent_today }}</p>
-            </div>
+                <strong>Admin</strong>
 
-            <div class="card">
-                <h3>Today's Date</h3>
-                <p>{{ current_date }}</p>
+                <span>Administrator</span>
+
             </div>
 
         </div>
 
-        <br><br>
+    </header>
 
-        <div style="
-            width:600px;
-            margin:auto;
-            background:white;
-            padding:20px;
-            border-radius:10px;
-            box-shadow:0 2px 10px rgba(0,0,0,.15);
-        ">
 
-            <h3 style="text-align:center;">
-                Today's Attendance
-            </h3>
 
-            <canvas id="attendanceChart"></canvas>
+    <!-- CONTENT -->
 
-        </div>
+    <main class="dashboard-content">
+
+
+        <!-- WELCOME -->
+
+        <section class="welcome-box">
+
+            <div>
+
+                <span class="welcome-tag">
+                    SMART ATTENDANCE
+                </span>
+
+                <h2>
+                    Good day, Admin 👋
+                </h2>
+
+                <p>
+                    Here's what's happening with your
+                    attendance today.
+                </p>
+
+            </div>
+
+
+            <div class="today-date">
+
+                <span>Today</span>
+
+                <strong>
+                    {{ current_date }}
+                </strong>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             STAT CARDS
+        ========================= -->
+
+        <section class="stats-grid">
+
+
+            <!-- TOTAL -->
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-icon students">
+                        ♙
+                    </div>
+
+                    <span class="stat-label">
+                        TOTAL
+                    </span>
+
+                </div>
+
+
+                <h3>
+                    {{ total_students }}
+                </h3>
+
+                <p>
+                    Total Students
+                </p>
+
+            </div>
+
+
+
+            <!-- PRESENT -->
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-icon present">
+                        ✓
+                    </div>
+
+                    <span class="stat-label">
+                        TODAY
+                    </span>
+
+                </div>
+
+
+                <h3>
+                    {{ present_today }}
+                </h3>
+
+                <p>
+                    Students Present
+                </p>
+
+            </div>
+
+
+
+            <!-- ABSENT -->
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-icon absent">
+                        !
+                    </div>
+
+                    <span class="stat-label">
+                        TODAY
+                    </span>
+
+                </div>
+
+
+                <h3>
+                    {{ absent_today }}
+                </h3>
+
+                <p>
+                    Students Absent
+                </p>
+
+            </div>
+
+
+
+            <!-- DATE -->
+
+            <div class="stat-card date-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-icon date">
+                        ◷
+                    </div>
+
+                    <span class="stat-label">
+                        DATE
+                    </span>
+
+                </div>
+
+
+                <h3 class="date-value">
+                    {{ current_date }}
+                </h3>
+
+                <p>
+                    Current Date
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =========================
+             LOWER SECTION
+        ========================= -->
+
+        <section class="dashboard-grid">
+
+
+            <!-- ATTENDANCE CHART -->
+
+            <div class="chart-card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h3>
+                            Today's Attendance
+                        </h3>
+
+                        <p>
+                            Present vs absent students
+                        </p>
+
+                    </div>
+
+
+                    <span class="chart-date">
+                        {{ current_date }}
+                    </span>
+
+                </div>
+
+
+                <div class="chart-container">
+
+                    <canvas id="attendanceChart"></canvas>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- SUMMARY -->
+
+            <div class="summary-card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h3>
+                            Attendance Summary
+                        </h3>
+
+                        <p>
+                            Today's overview
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="summary-item">
+
+                    <div class="summary-left">
+
+                        <span class="summary-dot present-dot"></span>
+
+                        <span>Present</span>
+
+                    </div>
+
+                    <strong>
+                        {{ present_today }}
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-item">
+
+                    <div class="summary-left">
+
+                        <span class="summary-dot absent-dot"></span>
+
+                        <span>Absent</span>
+
+                    </div>
+
+                    <strong>
+                        {{ absent_today }}
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-item">
+
+                    <div class="summary-left">
+
+                        <span class="summary-dot total-dot"></span>
+
+                        <span>Total Students</span>
+
+                    </div>
+
+                    <strong>
+                        {{ total_students }}
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-message">
+
+                    <span>✓</span>
+
+                    Attendance data is updated
+                    from your database.
+
+                </div>
+
+            </div>
+
+
+        </section>
+
 
     </main>
 
 </div>
 
+
+
+<!-- =========================
+     CHART JS
+========================= -->
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 
 <script>
 
-const present = Number("{{ present_today }}");
-const absent = Number("{{ absent_today }}");
+const present =
+    Number("{{ present_today }}");
 
-const ctx = document.getElementById("attendanceChart");
+const absent =
+    Number("{{ absent_today }}");
+
+
+const ctx =
+    document.getElementById("attendanceChart");
+
 
 new Chart(ctx, {
 
-    type: "pie",
+    type: "doughnut",
 
     data: {
 
-        labels: ["Present", "Absent"],
+        labels: [
+            "Present",
+            "Absent"
+        ],
 
         datasets: [
 
             {
 
-                data: [present, absent],
-                
-                backgroundColor: [
-
-                    "#28a745",
-                    "#dc3545"
-
+                data: [
+                    present,
+                    absent
                 ],
 
-                borderWidth: 1
+                backgroundColor: [
+                    "#22c55e",
+                    "#ef4444"
+                ],
+
+                borderWidth: 0,
+
+                hoverOffset: 5
 
             }
 
@@ -119,15 +509,32 @@ new Chart(ctx, {
 
     },
 
+
     options: {
 
         responsive: true,
+
+        maintainAspectRatio: false,
+
+        cutout: "68%",
 
         plugins: {
 
             legend: {
 
-                position: "bottom"
+                position: "bottom",
+
+                labels: {
+
+                    usePointStyle: true,
+
+                    padding: 20,
+
+                    font: {
+                        size: 12
+                    }
+
+                }
 
             }
 
@@ -138,6 +545,7 @@ new Chart(ctx, {
 });
 
 </script>
+
 
 </body>
 

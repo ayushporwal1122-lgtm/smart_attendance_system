@@ -1,34 +1,328 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Admin Login</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Attendance | Login</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/login.css') }}">
 </head>
+
 <body class="login-page">
 
-<div class="login-box">
-    <h1>Admin Login</h1>
+    <div class="login-container">
 
-    <form method="POST" action="/login">
+        <!-- LEFT SIDE -->
+        <section class="left-panel">
 
-         <input type="text"
-           name="username"
-           placeholder="Enter Username"
-           required>
+            <!-- Brand -->
+            <div class="brand">
 
-       <br><br>
+                <div class="brand-logo">
+                    ✓
+                </div>
 
-        <input type="password"
-           name="password"
-           placeholder="Enter Password"
-           required>
+                <div>
+                    <h2>Smart Attendance</h2>
+                    <p>Management System</p>
+                </div>
 
-       <br><br>
+            </div>
 
-       <button type="submit">Login</button>
 
-    </form>
-</div>
+            <!-- Main Content -->
+            <div class="left-content">
+
+                <span class="tag">
+                    ATTENDANCE MANAGEMENT
+                </span>
+
+                <h1>
+                    Manage attendance
+                    <span>with ease.</span>
+                </h1>
+
+                <p>
+                    A simple and intelligent platform to manage
+                    students, attendance and academic records
+                    in one place.
+                </p>
+
+
+                <!-- Illustration -->
+                <div class="illustration">
+
+                    <div class="illustration-window">
+
+                        <div class="window-top">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+
+                        <div class="window-content">
+
+                            <div class="mini-sidebar">
+                                <div class="mini-logo">✓</div>
+                                <i></i>
+                                <i></i>
+                                <i></i>
+                                <i></i>
+                            </div>
+
+                            <div class="mini-main">
+
+                                <div class="mini-heading"></div>
+
+                                <div class="mini-cards">
+
+                                    <div class="mini-card">
+                                        <div></div>
+                                        <span></span>
+                                    </div>
+
+                                    <div class="mini-card">
+                                        <div></div>
+                                        <span></span>
+                                    </div>
+
+                                    <div class="mini-card">
+                                        <div></div>
+                                        <span></span>
+                                    </div>
+
+                                </div>
+
+                                <div class="mini-table">
+
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="floating-check">
+                        ✓
+                    </div>
+
+                    <div class="floating-user">
+                        👤
+                    </div>
+
+                </div>
+
+
+                <!-- Features -->
+                <div class="features">
+
+                    <div>
+                        <span>✓</span>
+                        Student Management
+                    </div>
+
+                    <div>
+                        <span>✓</span>
+                        Smart Attendance
+                    </div>
+
+                    <div>
+                        <span>✓</span>
+                        Reports & Analytics
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <p class="copyright">
+                © 2026 Smart Attendance System
+            </p>
+
+        </section>
+
+
+        <!-- RIGHT SIDE -->
+        <section class="right-panel">
+
+            <div class="login-box">
+
+                <div class="mobile-logo">
+                    ✓
+                </div>
+
+
+                <div class="login-heading">
+
+                    <span>ADMIN PORTAL</span>
+
+                    <h1>Welcome back</h1>
+
+                    <p>
+                        Sign in to access your dashboard.
+                    </p>
+
+                </div>
+
+
+                <form method="POST" action="/login">
+
+                    <!-- Username -->
+
+                    <div class="form-group">
+
+                        <label for="username">
+                            Username
+                        </label>
+
+                        <div class="input-box">
+
+                            <svg viewBox="0 0 24 24">
+
+                                <circle
+                                    cx="12"
+                                    cy="7"
+                                    r="4">
+                                </circle>
+
+                                <path
+                                    d="M5 21a7 7 0 0 1 14 0">
+                                </path>
+
+                            </svg>
+
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                placeholder="Enter your username"
+                                required>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Password -->
+
+                    <div class="form-group">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <div class="input-box">
+
+                            <svg viewBox="0 0 24 24">
+
+                                <rect
+                                    x="4"
+                                    y="10"
+                                    width="16"
+                                    height="11"
+                                    rx="2">
+                                </rect>
+
+                                <path
+                                    d="M8 10V7a4 4 0 0 1 8 0v3">
+                                </path>
+
+                            </svg>
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                required>
+
+                            <button
+                                type="button"
+                                onclick="togglePassword()">
+
+                                <span id="eye">
+                                    👁
+                                </span>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="login-btn">
+
+                        Sign in to Dashboard
+
+                        <span>→</span>
+
+                    </button>
+
+                </form>
+
+
+                <div class="secure">
+
+                    <span>🔒</span>
+
+                    Secure admin access
+
+                </div>
+
+
+                <p class="footer-text">
+                    Smart Attendance System
+                </p>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <script>
+
+        function togglePassword() {
+
+            const password =
+                document.getElementById("password");
+
+            const eye =
+                document.getElementById("eye");
+
+            if (password.type === "password") {
+
+                password.type = "text";
+
+                eye.innerText = "🙈";
+
+            } else {
+
+                password.type = "password";
+
+                eye.innerText = "👁";
+
+            }
+
+        }
+
+    </script>
 
 </body>
+
 </html>

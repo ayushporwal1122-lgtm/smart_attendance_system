@@ -4,5 +4,6 @@ __pycache__/
 .env
 .vscode/
 encodings/
+static/uploads/
 Attendance_Report.pdf
 Attendance_Report.xlsx
