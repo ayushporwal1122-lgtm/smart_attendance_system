@@ -74,3 +74,27 @@ smart_attendance_system/
 │   └── js/
 │
 └── uploads/
+
+
+## 📸 Screenshots
+
+### 🔐 Login Page
+![Login Page](screenshots/loginpage.png)
+
+### 📊 Dashboard
+![Dashboard](screenshots/dashboardpage.png)
+
+### 👨‍🎓 Add Student
+![Add Student](screenshots/addstudentpage.png)
+
+### 👥 Student Management
+![Student Management](screenshots/studentpage.png)
+
+### 📝 Attendance
+![Attendance](screenshots/attendancepage.png)
+
+### 📋 Attendance Reports
+![Attendance Reports](screenshots/reportpage.png)
+
+### 📊 Report Summary
+![Report Summary](screenshots/reportpage2.png)
