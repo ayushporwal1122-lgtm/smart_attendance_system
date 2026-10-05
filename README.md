@@ -79,22 +79,20 @@ smart_attendance_system/
 ## 📸 Screenshots
 
 ### 🔐 Login Page
-![Login Page](screenshots/loginpage.png)
+![Login Page](https://raw.githubusercontent.com/ayushporwal1122-lgtm/smart_attendance_system/main/screenshots/loginpage.png)
 
 ### 📊 Dashboard
-![Dashboard](screenshots/dashboardpage.png)
+![Dashboard](https://raw.githubusercontent.com/ayushporwal1122-lgtm/smart_attendance_system/main/screenshots/dashboardpage.png)
 
-### 👨‍🎓 Add Student
-![Add Student](screenshots/addstudentpage.png)
+### 🧑‍🎓 Add Student
+![Add Student](https://raw.githubusercontent.com/ayushporwal1122-lgtm/smart_attendance_system/main/screenshots/addstudentpage.png)
 
 ### 👥 Student Management
-![Student Management](screenshots/studentpage.png)
+![Student Management](https://raw.githubusercontent.com/ayushporwal1122-lgtm/smart_attendance_system/main/screenshots/studentpage.png)
 
-### 📝 Attendance
-![Attendance](screenshots/attendancepage.png)
+### 📄 Attendance
+![Attendance](https://raw.githubusercontent.com/ayushporwal1122-lgtm/smart_attendance_system/main/screenshots/attendancepage.png)
 
 ### 📋 Attendance Reports
-![Attendance Reports](screenshots/reportpage.png)
+![Attendance Reports](https://raw.githubusercontent.com/ayushporwal1122-lgtm/smart_attendance_system/main/screenshots/reportpage.png)
 
-### 📊 Report Summary
-![Report Summary](screenshots/reportpage2.png)
